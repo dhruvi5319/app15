@@ -29,12 +29,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. A user can register and log in with email/password; JWT access and refresh tokens are issued
   4. GitHub Actions CI pipeline runs lint, tests, and build on every push to main
   5. API and SPA deploy automatically to Render/Neon on merge to main
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 01-01: Monorepo scaffold, tooling, and CI/CD pipeline
-- [ ] 01-02: Database schema, migrations, and auth API
-- [ ] 01-03: React SPA shell, routing, and login/auth flow
+- [ ] 01-01-PLAN.md — Monorepo scaffold (npm workspaces, TypeScript, ESLint, env config, Docker Compose, GitHub Actions CI)
+- [ ] 01-02-PLAN.md — Database schema (6 Knex migrations, exact TechArch DDL) and auth API (register, login, refresh, logout)
+- [ ] 01-03-PLAN.md — React SPA shell (React Router, Zustand auth store, Axios client, page shells, LoginPage, Playwright e2e)
 
 ### Phase 2: Core Wine Entry
 **Goal**: Users can add wines to their inventory and know exactly what they have at any time
