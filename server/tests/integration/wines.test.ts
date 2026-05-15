@@ -352,4 +352,34 @@ describe('Wines API', () => {
       expect(res.status).toBe(422);
     });
   });
+
+  describe('Tasting notes', () => {
+    let wineId: string;
+
+    beforeAll(async () => {
+      const res = await request
+        .post('/api/v1/wines')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ name: 'Tasting Note Target' });
+      wineId = res.body.id;
+    });
+
+    it('PATCH /wines/:id with tasting_notes saves and returns the note', async () => {
+      const res = await request
+        .patch(`/api/v1/wines/${wineId}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ tasting_notes: 'Rich and complex with dark fruit notes' });
+      expect(res.status).toBe(200);
+      expect(res.body.tasting_notes).toBe('Rich and complex with dark fruit notes');
+    });
+
+    it('PATCH /wines/:id with tasting_notes="" clears notes (returns null)', async () => {
+      const res = await request
+        .patch(`/api/v1/wines/${wineId}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ tasting_notes: '' });
+      expect(res.status).toBe(200);
+      expect(res.body.tasting_notes).toBeNull();
+    });
+  });
 });
