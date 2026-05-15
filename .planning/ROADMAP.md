@@ -13,7 +13,7 @@ Greenfield delivery of a personal wine cellar management application. The journe
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Project scaffolding, tech stack, database schema, auth, and CI/CD pipeline
-- [ ] **Phase 2: Core Wine Entry** - Users can add, view, and manage wines in their inventory
+- [x] **Phase 2: Core Wine Entry** - Users can add, view, and manage wines in their inventory
 - [ ] **Phase 3: Tasting Notes** - Users can add and edit free-text tasting notes on any wine
 - [ ] **Phase 4: Lifecycle Tracking** - Users can mark wines as consumed and manage status transitions
 
@@ -52,9 +52,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Wine CRUD API + bottle-count endpoint + migration 007 (status_changed_at) + integration tests
-- [ ] 02-02-PLAN.md — Inventory list page + wine detail page (React Query hooks, WineCard, EmptyState, StatusBadge, ConfirmDialog)
-- [ ] 02-03-PLAN.md — Add/edit wine forms (WineForm, BottleCountControl with optimistic UI, AddWinePage, EditWinePage)
+- [x] 02-01-PLAN.md — Wine CRUD API + bottle-count endpoint + migration 007 (status_changed_at) + integration tests
+- [x] 02-02-PLAN.md — Inventory list page + wine detail page (React Query hooks, WineCard, EmptyState, StatusBadge, ConfirmDialog)
+- [x] 02-03-PLAN.md — Add/edit wine forms (WineForm, BottleCountControl with optimistic UI, AddWinePage, EditWinePage)
 
 ### Phase 3: Tasting Notes
 **Goal**: Users can capture and update their personal impressions of any wine in their inventory
@@ -92,6 +92,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | Complete | 2026-05-15 |
-| 2. Core Wine Entry | 0/3 | Not started | - |
+| 2. Core Wine Entry | 3/3 | Complete | 2026-05-15 |
 | 3. Tasting Notes | 0/1 | Not started | - |
 | 4. Lifecycle Tracking | 0/1 | Not started | - |
