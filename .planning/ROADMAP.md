@@ -65,10 +65,10 @@ Plans:
   2. User can edit an existing tasting note and the updated text is saved
   3. Tasting notes are displayed on the wine detail page alongside all other wine information
   4. User can clear a tasting note (set to empty) if desired
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 03-01: Tasting notes API (PATCH /wines/:id with tasting_notes field) and frontend editor
+- [ ] 03-01-PLAN.md — TastingNotesEditor component (inline add/edit/clear on detail page) + server integration tests + Playwright e2e
 
 ### Phase 4: Lifecycle Tracking
 **Goal**: Users can mark wines as consumed and keep their active inventory accurate
@@ -93,5 +93,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | Complete | 2026-05-15 |
 | 2. Core Wine Entry | 3/3 | Complete | 2026-05-15 |
-| 3. Tasting Notes | 0/1 | Not started | - |
+| 3. Tasting Notes | 0/1 | Planned | - |
 | 4. Lifecycle Tracking | 0/1 | Not started | - |
