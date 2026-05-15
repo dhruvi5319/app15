@@ -20,7 +20,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 ## Phase Details
 
 ### Phase 1: Foundation
-**Status**: Complete (2026-05-15)
+**Status**: completed (2026-05-15)
+**Last Updated**: 2026-05-15T19:28:02Z
 **Goal**: A runnable, deployable full-stack skeleton exists — auth works, database is migrated, CI/CD pipeline is live
 **Depends on**: Nothing (first phase)
 **Requirements**: *(no v1 user requirements — this phase unblocks all others)*
