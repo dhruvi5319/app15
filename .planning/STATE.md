@@ -3,15 +3,15 @@ pivota_spec_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-03-PLAN.md
-last_updated: "2026-05-15T18:20:09.438Z"
-last_activity: 2026-05-15 — Completed 01-03-PLAN.md (React SPA shell, Zustand auth store, Playwright e2e tests)
+stopped_at: Planned 02-03-PLAN.md
+last_updated: "2026-05-15T19:40:00.000Z"
+last_activity: 2026-05-15 — Planned Phase 2 (3 plans: Wine CRUD API, Inventory list + detail, Add/edit forms)
 progress:
   total_phases: 4
   completed_phases: 1
-  total_plans: 3
+  total_plans: 6
   completed_plans: 3
-  percent: 67
+  percent: 50
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-15)
 
 **Core value:** A user can quickly log a wine and know exactly what they have in their cellar at any time.
-**Current focus:** Phase 1 — Foundation
+**Current focus:** Phase 2 — Core Wine Entry
 
 ## Current Position
 
-Phase: 1 of 4 (Foundation) — COMPLETE
-Plan: 3 of 3 in current phase
-Status: Phase 1 complete — ready for Phase 2
-Last activity: 2026-05-15 — Completed 01-03-PLAN.md (React SPA shell, auth store, Playwright e2e tests)
+Phase: 2 of 4 (Core Wine Entry) — PLANNED, ready to execute
+Plan: 0 of 3 in current phase
+Status: Phase 2 planned — 3 plans ready for execution
+Last activity: 2026-05-15 — Planned Phase 2 (Wine CRUD API, Inventory list/detail pages, Add/edit forms)
 
-Progress: [██████████] 100% (Phase 1)
+Progress: [██████████░░░░░░░░░░] 50% (Phase 1 complete, Phase 2 planned)
 
 ## Performance Metrics
 
@@ -45,6 +45,7 @@ Progress: [██████████] 100% (Phase 1)
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-foundation | 3/3 | 14min | ~5min |
+| 02-core-wine-entry | 0/3 | — | — |
 
 **Recent Trend:**
 
@@ -76,6 +77,10 @@ Recent decisions affecting current work:
 - [Phase 01-02]: jwt.sign expiresIn cast via SignOptions type to satisfy @types/jsonwebtoken StringValue constraint
 - [Phase 01-foundation]: vite-env.d.ts added to client: was missing from scaffold; required for import.meta.env TypeScript types (Rule 3 auto-fix)
 - [Phase 01-foundation]: Playwright e2e tests written as artifacts; execution deferred to verify phase (requires live API)
+- [Phase 02]: status_changed_at column added via migration 007 in plan 02-01 (FRD Y0 schema had it; TechArch DDL omitted it; Phase 2 fixes the gap)
+- [Phase 02]: BottleCountControl uses optimistic UI — updates local count immediately, reverts on error
+- [Phase 02]: WineForm is shared between AddWinePage and EditWinePage; initialValues optional (absent = empty form, present = pre-populated edit)
+- [Phase 02]: Frontend uses inline styles (no Tailwind); Phase 1 did not configure Tailwind, adding a new dependency avoided for Phase 2
 
 ### Pending Todos
 
@@ -87,6 +92,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-05-15T18:20:09.436Z
-Stopped at: Completed 01-03-PLAN.md
+Last session: 2026-05-15T19:40:00.000Z
+Stopped at: Planned 02-03-PLAN.md
 Resume file: None
