@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import { env } from './config/env';
 import { errorHandler } from './middleware/errorHandler';
 import { authRouter } from './routes/auth.routes';
+import { winesRouter } from './routes/wines.routes';
 
 export function createApp() {
   const app = express();
@@ -17,7 +18,7 @@ export function createApp() {
   });
 
   app.use('/api/v1/auth', authRouter);
-  // app.use('/api/v1/wines', winesRouter);
+  app.use('/api/v1/wines', winesRouter);
 
   app.use(errorHandler);
 
