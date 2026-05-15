@@ -2,36 +2,39 @@
 phase: 02-core-wine-entry
 plan: "01"
 subsystem: api
-tags: [knex, postgresql, express, zod, supertest, wines, crud, search, tsvector]
+tags: [knex, postgresql, express, zod, jwt, tsvector, wine-crud, integration-tests]
 
+# Dependency graph
 requires:
   - phase: 01-foundation/01-02
-    provides: Auth API, JWT middleware, Knex db instance, validate() middleware
-  - phase: 01-foundation/01-01
-    provides: Express app factory, monorepo scaffold
+    provides: Express app factory, Knex db instance, authenticate middleware, validate middleware, JWT auth API
 provides:
-  - Migration 007: status_changed_at TIMESTAMPTZ column on wines
-  - Full wine.types.ts: Wine, WineListItem, QueryOptions, BottleCountResult, CreateWineInput, UpdateWineInput
-  - winesRepo: create, findById, findByIdAnyUser, update, delete, updateBottleCount
-  - searchService: findAll with filter/sort/pagination/tsvector search
-  - winesService: list, create, getById, update, delete, updateBottleCount with business rules
-  - winesController: list, create, getById, update, delete, updateBottleCount
-  - winesRouter: all 6 routes mounted at /api/v1/wines
-  - Integration tests: 25/25 passing
-affects: [02-02, 02-03, 03-01, 04-01]
+  - Migration 007: status_changed_at TIMESTAMPTZ column on wines table
+  - Full Wine CRUD API: GET /api/v1/wines, POST, GET/:id, PATCH/:id, DELETE/:id, PATCH/:id/bottle-count
+  - wine.types.ts: Wine, WineListItem, WineListResponse, PaginationMeta, QueryOptions, BottleCountResult, CreateWineInput, UpdateWineInput
+  - winesRepo: Knex queries for all wine CRUD operations
+  - searchService: full-text search + filter/sort/pagination for wine list
+  - winesService: business rules (ownership, validation, status guard, COUNT_BELOW_ZERO)
+  - winesController: Express layer with UUID validation
+  - winesRouter: Zod schemas + 6 routes
+  - 25 passing integration tests
+affects: [02-02, 02-03, 03-status-lifecycle, 04-final-features]
 
+# Tech tracking
 tech-stack:
+  added: []
   patterns:
-    - Same layered arch as auth: types → repo → service → controller → routes
-    - searchService builds Knex query with tsvector full-text search and all filters
-    - winesService.getById does 403/404 disambiguation (findByIdAnyUser then ownership check)
-    - winesController.requireUuid validates UUID format before DB hit (400 INVALID_ID)
-    - updateBottleCount uses db.raw('bottle_count + ?', [delta]) for atomic increment
+    - Same layered architecture as auth: types → repo → service → controller → routes
+    - Repository pattern extended to winesRepo with updateBottleCount using raw SQL delta
+    - Separate searchService for complex query-building (filter/sort/pagination/full-text)
+    - Error pattern: statusCode + code properties on thrown Error objects
+    - UUID validation at controller boundary before service call
+    - Zod strips unknown fields (status protected from PATCH by schema exclusion → 422 on empty body)
 
 key-files:
   created:
     - server/migrations/20240101000007_add_status_changed_at.ts
-    - server/src/types/wine.types.ts (replaced placeholder)
+    - server/src/types/wine.types.ts
     - server/src/repositories/wines.repo.ts
     - server/src/services/search.service.ts
     - server/src/services/wines.service.ts
@@ -39,95 +42,141 @@ key-files:
     - server/src/routes/wines.routes.ts
     - server/tests/integration/wines.test.ts
   modified:
-    - server/src/app.ts (winesRouter imported and mounted)
+    - server/src/app.ts
 
 key-decisions:
-  - "rating enforced 1-5 at Zod route layer; DDL CHECK 1-100 preserved from TechArch"
-  - "tasting_notes: '' stored as null (sanitizeTastingNotes helper)"
-  - "status NOT in updateWineSchema — Zod strips it; dedicated /status endpoint in Phase 4"
-  - "getById does findByIdAnyUser first, then checks ownership — returns 403 not 404 for foreign wines"
+  - "searchService separated from winesService to isolate complex query-building from business rules"
+  - "UUID validation at controller level returns 400 INVALID_ID before hitting service"
+  - "status field protected via Zod schema omission (not via explicit guard in service)"
+  - "tasting_notes empty string sanitized to null in both create and update paths"
 
-duration: ~8min
+patterns-established:
+  - "winesRepo.updateBottleCount uses db.raw('bottle_count + ?', [delta]) for atomic DB operation"
+  - "searchService.findAll clones query before count to avoid pagination affecting total count"
+  - "Ownership check pattern: findByIdAnyUser → check user_id → 403 FORBIDDEN if mismatch"
+
+# Metrics
+duration: 3min
 completed: 2026-05-15
 ---
 
 # Phase 2 Plan 1: Wine CRUD API Summary
 
-**Migration 007 (status_changed_at), full Wine CRUD API (6 endpoints), tsvector search, bottle count with optimistic guard, 25/25 integration tests passing**
+**Full Wine CRUD API (6 endpoints) with PostgreSQL full-text search, Knex repository + search service, Zod validation, ownership enforcement, and 25/25 integration tests passing**
 
 ## Performance
 
-- **Duration:** ~8min
+- **Duration:** 3 min
+- **Started:** 2026-05-15T19:43:11Z
+- **Completed:** 2026-05-15T19:46:37Z
 - **Tasks:** 3
-- **Files created:** 8 new + 2 modified = 10 total
-- **Tests:** 25 passed, 25 total
+- **Files modified:** 8 created + 1 modified = 9 total
 
 ## Accomplishments
 
-- Migration 007 adds `status_changed_at TIMESTAMPTZ` to wines table (needed by Phase 3/4)
-- Full wine.types.ts with all types: Wine, WineListItem, PaginationMeta, WineListResponse, QueryOptions, BottleCountResult, CreateWineInput, UpdateWineInput
-- winesRepo: all CRUD + updateBottleCount with atomic raw SQL delta
-- searchService: Knex query builder with tsvector `@@ plainto_tsquery`, ILIKE filters, sort, pagination, count
-- winesService: business rules — name trim, vintage range, rating 1–5, empty tasting_notes → null, ownership 403/404
-- winesController: UUID validation, list query parsing (defaults + coercion), all 6 handlers
-- winesRouter: Zod schemas for create, update, bottle-count; all routes; `winesRouter.use(authenticate)` guards all endpoints
-- app.ts updated to mount winesRouter
+- Migration 007 adds `status_changed_at TIMESTAMPTZ` (nullable) to wines table — needed by Phase 3/4 status transitions
+- Full Wine CRUD API with 6 endpoints all scoped to authenticated user (ownership enforced via 403 FORBIDDEN)
+- PostgreSQL full-text search via `search_vector @@ plainto_tsquery` with status/varietal/region/producer/vintage filters
+- Business rules: name required + trim, vintage 1800–currentYear+5, rating 1–5, tasting_notes="" → null, status immutable via PATCH, COUNT_BELOW_ZERO at 0
+- 25/25 integration tests passing in 2.7s
 
-## Endpoint Reference (for 02-02/02-03 frontend)
+## API Endpoint Contracts (for 02-02/02-03 frontend reference)
 
-| Method | Path | Auth | Request | Response |
-|--------|------|------|---------|----------|
-| `GET` | `/api/v1/wines` | Bearer | query: page, per_page, sort, direction, status, q, varietal, region, producer, vintage, vintage_from, vintage_to | 200 `{results: WineListItem[], pagination: {total, page, per_page, total_pages}}` |
-| `POST` | `/api/v1/wines` | Bearer | `{name, producer?, vintage?, varietal?, region?, bottle_count?, tasting_notes?, rating?}` | 201 `Wine` |
-| `GET` | `/api/v1/wines/:wine_id` | Bearer | — | 200 `Wine` |
-| `PATCH` | `/api/v1/wines/:wine_id` | Bearer | any subset of create fields (no status) | 200 `Wine` |
-| `DELETE` | `/api/v1/wines/:wine_id` | Bearer | — | 204 |
-| `PATCH` | `/api/v1/wines/:wine_id/bottle-count` | Bearer | `{action: "increment"\|"decrement"}` | 200 `{id, bottle_count, zero_bottle_flag, date_updated}` |
+| Endpoint | Method | Auth | Request | Response |
+|----------|--------|------|---------|----------|
+| `/api/v1/wines` | GET | Bearer | `?page&per_page&sort&direction&status&q&varietal&region&producer&vintage` | 200 `{results: WineListItem[], pagination: {total, page, per_page, total_pages}}` |
+| `/api/v1/wines` | POST | Bearer | `{name, producer?, vintage?, varietal?, region?, bottle_count?, tasting_notes?, rating?}` | 201 `Wine` |
+| `/api/v1/wines/:id` | GET | Bearer | — | 200 `Wine` \| 404 NOT_FOUND \| 403 FORBIDDEN |
+| `/api/v1/wines/:id` | PATCH | Bearer | `{name?, producer?, vintage?, varietal?, region?, bottle_count?, tasting_notes?, rating?}` | 200 `Wine` |
+| `/api/v1/wines/:id` | DELETE | Bearer | — | 204 |
+| `/api/v1/wines/:id/bottle-count` | PATCH | Bearer | `{action: "increment" \| "decrement"}` | 200 `{id, bottle_count, zero_bottle_flag, date_updated}` |
 
-## Error Codes
+**Default query params:** `page=1`, `per_page=20`, `sort=date_added`, `direction=desc`, `status=active`
 
-| Code | HTTP | Description |
-|------|------|-------------|
-| `NOT_FOUND` | 404 | Wine does not exist |
-| `FORBIDDEN` | 403 | Wine belongs to another user |
-| `INVALID_ID` | 400 | wine_id is not a valid UUID |
-| `VALIDATION_ERROR` | 422 | Field validation failure |
-| `COUNT_BELOW_ZERO` | 422 | Decrement attempted at bottle_count=0 |
+**Error codes in use:**
+- `NOT_FOUND` — 404 (wine not found)
+- `FORBIDDEN` — 403 (cross-user access attempt)
+- `INVALID_ID` — 400 (wine_id not a valid UUID)
+- `VALIDATION_ERROR` — 422 (name empty, vintage out of range, rating > 5, etc.)
+- `COUNT_BELOW_ZERO` — 422 (decrement at bottle_count=0)
 
 ## Exported Types from wine.types.ts
 
-```typescript
-WineStatus = 'active' | 'consumed' | 'removed'
-Wine { id, user_id, name, producer, vintage, varietal, region, bottle_count, status,
-       tasting_notes, rating, status_changed_at, date_added, date_updated, deleted_at }
-WineListItem { id, name, producer, vintage, varietal, region, bottle_count, status, rating, date_added, date_updated }
-PaginationMeta { total, page, per_page, total_pages }
-WineListResponse { results: WineListItem[], pagination: PaginationMeta }
-QueryOptions { page, per_page, sort, direction, status, q?, varietal?, region?, producer?, vintage?, vintage_from?, vintage_to? }
-BottleCountResult { id, bottle_count, zero_bottle_flag, date_updated }
-CreateWineInput { name, producer?, vintage?, varietal?, region?, bottle_count?, tasting_notes?, rating? }
-UpdateWineInput { name?, producer?, vintage?, varietal?, region?, bottle_count?, tasting_notes?, rating? }
-```
+For 02-02 and 02-03 frontend plans to reference:
+- `WineStatus` — `'active' | 'consumed' | 'removed'`
+- `Wine` — full DB record (all columns including status_changed_at, tasting_notes)
+- `WineListItem` — list subset (excludes tasting_notes, status_changed_at)
+- `WineListResponse` — `{results: WineListItem[], pagination: PaginationMeta}`
+- `PaginationMeta` — `{total, page, per_page, total_pages}`
+- `QueryOptions` — all GET /wines query params typed
+- `BottleCountResult` — `{id, bottle_count, zero_bottle_flag, date_updated}`
+- `CreateWineInput` — POST body shape
+- `UpdateWineInput` — PATCH body shape
+
+## Task Commits
+
+Each task was committed atomically:
+
+1. **Task 1: Migration 007 + full wine.types.ts** - `f58d1db` (feat)
+2. **Task 2: Wine repository + search service** - `744415d` (feat)
+3. **Task 3: Wine service, controller, routes, app.ts + integration tests** - `7049d4c` (feat)
+
+**Plan metadata:** (docs commit follows)
+
+## Files Created/Modified
+
+- `server/migrations/20240101000007_add_status_changed_at.ts` — Adds status_changed_at TIMESTAMPTZ column to wines table
+- `server/src/types/wine.types.ts` — Full type definitions: Wine, WineListItem, WineListResponse, PaginationMeta, QueryOptions, BottleCountResult, CreateWineInput, UpdateWineInput
+- `server/src/repositories/wines.repo.ts` — Knex CRUD queries: create, findById, findByIdAnyUser, update, delete, updateBottleCount
+- `server/src/services/search.service.ts` — Complex list query with full-text search, filters, sort, pagination
+- `server/src/services/wines.service.ts` — Business rules: validation, ownership, status guard, COUNT_BELOW_ZERO
+- `server/src/controllers/wines.controller.ts` — Express controllers with UUID validation, delegates to winesService
+- `server/src/routes/wines.routes.ts` — Zod schemas + 6 route definitions, all behind authenticate middleware
+- `server/src/app.ts` — Added winesRouter import + mount at /api/v1/wines
+- `server/tests/integration/wines.test.ts` — 25 integration tests covering all endpoints
+
+## Decisions Made
+
+- **searchService separated from winesService**: The complex query-building (filters, sort, pagination, full-text) is isolated in its own service to keep winesService focused on business rules. This also makes the search logic independently testable.
+- **UUID validation at controller boundary**: Invalid UUIDs return 400 INVALID_ID before reaching the service layer — avoids polluting business logic with format validation.
+- **Status protection via Zod schema**: `status` is not in `updateWineSchema`, so Zod strips it as an unknown field. If only `status` is sent, the body becomes `{}` and the refine check `Object.keys(data).length > 0` rejects it → 422. No explicit guard needed in service.
+
+## Deviations from Plan
+
+None — plan executed exactly as written.
+
+## Issues Encountered
+
+None — all 3 tasks completed successfully on first pass. 25/25 integration tests passed.
 
 ## Integration Test Results
 
 ```
-Tests: 25 passed, 25 total
+Tests:       25 passed, 25 total
 Test Suites: 1 passed, 1 total
-Time: ~5s
+Time:        2.688s
 ```
 
-All auth tests (10) still pass after changes — no regressions.
+| Test Suite | Tests | Status |
+|------------|-------|--------|
+| POST /api/v1/wines | 6 | ✅ all pass |
+| GET /api/v1/wines | 4 | ✅ all pass |
+| GET /api/v1/wines/:wine_id | 4 | ✅ all pass |
+| PATCH /api/v1/wines/:wine_id | 4 | ✅ all pass |
+| DELETE /api/v1/wines/:wine_id | 2 | ✅ all pass |
+| PATCH /api/v1/wines/:wine_id/bottle-count | 5 | ✅ all pass |
 
-## Task Commits
+## User Setup Required
 
-1. `43be44d` — feat(02-01): migration 007 + wine types
-2. `cadfce7` — feat(02-01): wine repository + search service
-3. `8449986` — feat(02-01): wine service, controller, routes, integration tests
+None — no external service configuration required. PostgreSQL connection uses the same DATABASE_URL as Phase 1.
 
-## Deviations from Plan
+## Next Phase Readiness
 
-None. All code implemented exactly as planned. The `updateWineSchema` does not include a `status` field — Zod strips unknown keys, resulting in an empty-body 422 if only status is sent (test verifies this is acceptable behavior).
+- Wine CRUD API complete — 02-02 (Inventory list + detail pages) and 02-03 (Add/edit forms) can use these endpoints immediately
+- All 6 endpoint contracts documented above for frontend reference
+- Error codes documented for frontend error handling
+- `req.user.id` ownership enforcement tested and working
+- No blockers
 
 ---
 *Phase: 02-core-wine-entry*
@@ -135,4 +184,4 @@ None. All code implemented exactly as planned. The `updateWineSchema` does not i
 
 ## Self-Check: PASSED
 
-All 8 key files present on disk. 25/25 tests pass. TypeScript clean.
+All 9 key files verified present on disk. All 3 task commits (`f58d1db`, `744415d`, `7049d4c`) confirmed in git log.
