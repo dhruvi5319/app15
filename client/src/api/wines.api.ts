@@ -6,6 +6,7 @@ import type {
   CreateWineInput,
   UpdateWineInput,
   BottleCountResult,
+  WineStatus,
 } from '../types/wine.types';
 
 export const winesApi = {
@@ -38,5 +39,11 @@ export const winesApi = {
   ): Promise<BottleCountResult> =>
     apiClient
       .patch<BottleCountResult>(`/api/v1/wines/${id}/bottle-count`, { action })
+      .then((r) => r.data),
+
+  // PATCH /api/v1/wines/:id/status — status transition (active↔consumed/removed)
+  updateStatus: (id: string, status: WineStatus): Promise<Wine> =>
+    apiClient
+      .patch<Wine>(`/api/v1/wines/${id}/status`, { status })
       .then((r) => r.data),
 };

@@ -5,6 +5,7 @@ import { useDeleteWine } from '../hooks/useDeleteWine';
 import { StatusBadge } from '../components/StatusBadge';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { TastingNotesEditor } from '../components/TastingNotesEditor';
+import { StatusTransitionButtons } from '../components/StatusTransitionButtons';
 import { formatters } from '../utils/formatters';
 
 export function WineDetailPage() {
@@ -123,6 +124,9 @@ export function WineDetailPage() {
           {field('Last Updated', formatters.date(wine.date_updated))}
         </dl>
       </div>
+
+      {/* Status actions */}
+      <StatusTransitionButtons wineId={wine.id} currentStatus={wine.status} />
 
       {/* Tasting notes — inline editor */}
       <TastingNotesEditor wineId={wine.id} currentNotes={wine.tasting_notes} />
