@@ -2,16 +2,16 @@
 pivota_spec_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Phase 2 planned — 3 plans ready for execution
-stopped_at: Completed 02-core-wine-entry-01-PLAN.md
-last_updated: "2026-05-15T19:47:45.165Z"
-last_activity: 2026-05-15 — Planned Phase 2 (Wine CRUD API, Inventory list/detail pages, Add/edit forms)
+status: executing
+stopped_at: Completed 02-core-wine-entry-02-PLAN.md
+last_updated: "2026-05-15T19:52:41.849Z"
+last_activity: 2026-05-15 — Completed 02-01 Wine CRUD API (25/25 tests, 6 endpoints)
 progress:
   total_phases: 4
   completed_phases: 1
   total_plans: 6
-  completed_plans: 4
-  percent: 50
+  completed_plans: 5
+  percent: 67
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-05-15)
 ## Current Position
 
 Phase: 2 of 4 (Core Wine Entry) — executing
-Plan: 1 of 3 in current phase (02-01 complete)
-Status: Phase 2 executing — 02-01 done, 02-02 and 02-03 ready
-Last activity: 2026-05-15 — Completed 02-01 Wine CRUD API (25/25 tests, 6 endpoints)
+Plan: 2 of 3 in current phase (02-01 and 02-02 complete)
+Status: Phase 2 executing — 02-01 and 02-02 done, 02-03 ready
+Last activity: 2026-05-15 — Completed 02-02 Inventory list + wine detail pages (12 files)
 
-Progress: [███████░░░] 67% (Phase 1 complete, Phase 2 plan 1/3 done)
+Progress: [████████░░] 83% (Phase 1 complete, Phase 2 plans 1-2/3 done)
 
 ## Performance Metrics
 
@@ -45,12 +45,12 @@ Progress: [███████░░░] 67% (Phase 1 complete, Phase 2 plan 1
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-foundation | 3/3 | 14min | ~5min |
-| 02-core-wine-entry | 1/3 | 3min | ~3min |
+| 02-core-wine-entry | 2/3 | 5min | ~2.5min |
 
 **Recent Trend:**
 
-- Last 5 plans: 02-03 (8min), 03-01 (8min), 04-01 (10min)
-- Trend: stable
+- Last 5 plans: 01-01 (6min), 01-02 (4min), 01-03 (4min), 02-01 (3min), 02-02 (2min)
+- Trend: ↓ Accelerating
 
 *Updated after each plan completion*
 
@@ -60,6 +60,7 @@ Progress: [███████░░░] 67% (Phase 1 complete, Phase 2 plan 1
 | Phase 01 P02 | 4min | 2 tasks | 19 files |
 | Phase 01-foundation P03 | 4min | 2 tasks | 20 files |
 | Phase 02-core-wine-entry P01 | 3min | 3 tasks | 9 files |
+| Phase 02-core-wine-entry P02 | 2min | 2 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -84,6 +85,8 @@ Recent decisions affecting current work:
 - [Phase 02]: Frontend uses inline styles (no Tailwind); Phase 1 did not configure Tailwind, adding a new dependency avoided for Phase 2
 - [Phase 02-core-wine-entry]: searchService separated from winesService to isolate complex query-building from business rules
 - [Phase 02-core-wine-entry]: status field protected from PATCH via Zod schema omission: unknown fields stripped → empty body → 422
+- [Phase 02-core-wine-entry]: useWines queryKey includes full params object (['wines', params]) for per-query cache keying — separate cache entries per sort/filter/page combination
+- [Phase 02-core-wine-entry]: useWine accepts string | undefined (not string) — matches useParams return type, avoids non-null assertions in pages
 
 ### Pending Todos
 
@@ -95,6 +98,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-05-15T19:47:45.164Z
-Stopped at: Completed 02-core-wine-entry-01-PLAN.md
+Last session: 2026-05-15T19:52:41.848Z
+Stopped at: Completed 02-core-wine-entry-02-PLAN.md
 Resume file: None
