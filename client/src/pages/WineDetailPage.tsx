@@ -4,6 +4,7 @@ import { useWine } from '../hooks/useWine';
 import { useDeleteWine } from '../hooks/useDeleteWine';
 import { StatusBadge } from '../components/StatusBadge';
 import { ConfirmDialog } from '../components/ConfirmDialog';
+import { TastingNotesEditor } from '../components/TastingNotesEditor';
 import { formatters } from '../utils/formatters';
 
 export function WineDetailPage() {
@@ -123,15 +124,8 @@ export function WineDetailPage() {
         </dl>
       </div>
 
-      {/* Tasting notes */}
-      {wine.tasting_notes && (
-        <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 24, marginBottom: 24 }}>
-          <h2 style={{ fontSize: 14, fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>
-            Tasting Notes
-          </h2>
-          <p style={{ fontSize: 15, color: '#111827', lineHeight: 1.6 }}>{wine.tasting_notes}</p>
-        </div>
-      )}
+      {/* Tasting notes — inline editor */}
+      <TastingNotesEditor wineId={wine.id} currentNotes={wine.tasting_notes} />
 
       {/* Delete mutation error */}
       {deleteMutation.isError && (
