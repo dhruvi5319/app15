@@ -9,7 +9,6 @@ export function AddWinePage() {
 
   async function handleSubmit(data: CreateWineInput | UpdateWineInput) {
     try {
-      // On the Add page, the form always provides a name (required), so cast is safe
       const wine = await createMutation.mutateAsync(data as CreateWineInput);
       // Navigate to the new wine's detail page
       navigate(`/wines/${wine.id}`, { replace: true });

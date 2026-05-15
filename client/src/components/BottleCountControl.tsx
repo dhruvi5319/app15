@@ -22,7 +22,7 @@ export function BottleCountControl({ wineId, currentCount }: BottleCountControlP
     cursor: disabled ? 'not-allowed' : 'pointer',
     fontSize: 20,
     fontWeight: 700,
-    lineHeight: '1',
+    lineHeight: 1,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
