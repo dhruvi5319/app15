@@ -1,0 +1,12 @@
+{
+  "name": "wine-inventory",
+  "private": true,
+  "workspaces": ["server", "client"],
+  "scripts": {
+    "lint": "npm run lint --workspaces --if-present",
+    "type-check": "npm run type-check --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "e2e": "playwright test --config client/playwright.config.ts"
+  }
+}

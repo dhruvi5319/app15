@@ -11,3 +11,19 @@ node_modules/
 test-results/
 playwright-report/
 # <<< pivota:opencode-ignore
+
+# Build output
+dist/
+
+# Environment files
+.env
+*.local
+
+# macOS
+.DS_Store
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Test coverage
+coverage/
