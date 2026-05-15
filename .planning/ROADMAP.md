@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Foundation** - Project scaffolding, tech stack, database schema, auth, and CI/CD pipeline
 - [x] **Phase 2: Core Wine Entry** - Users can add, view, and manage wines in their inventory
 - [x] **Phase 3: Tasting Notes** - Users can add and edit free-text tasting notes on any wine
-- [ ] **Phase 4: Lifecycle Tracking** - Users can mark wines as consumed and manage status transitions
+- [x] **Phase 4: Lifecycle Tracking** - Users can mark wines as consumed and manage status transitions
 
 ## Phase Details
 
@@ -82,7 +82,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 04-01-PLAN.md — Wine status API (PATCH /wines/:id/status) + StatusTransitionButtons + HistoryPage + Playwright e2e
+- [x] 04-01-PLAN.md — Wine status API (PATCH /wines/:id/status) + StatusTransitionButtons + HistoryPage + Playwright e2e
 
 ## Progress
 
@@ -94,4 +94,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 1. Foundation | 3/3 | Complete | 2026-05-15 |
 | 2. Core Wine Entry | 3/3 | Complete | 2026-05-15 |
 | 3. Tasting Notes | 1/1 | Complete | 2026-05-15 |
-| 4. Lifecycle Tracking | 0/1 | Planned | - |
+| 4. Lifecycle Tracking | 1/1 | Complete | 2026-05-15 |

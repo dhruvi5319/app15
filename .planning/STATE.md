@@ -3,15 +3,15 @@ pivota_spec_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 03-01-PLAN.md
-last_updated: "2026-05-15T21:30:00.000Z"
-last_activity: 2026-05-15 — Completed Phase 3 (TastingNotesEditor inline editor, WineDetailPage updated, 37/37 tests pass)
+stopped_at: Completed 04-01-PLAN.md
+last_updated: "2026-05-15T22:00:00.000Z"
+last_activity: 2026-05-15 — Completed Phase 4 (PATCH /status endpoint, StatusTransitionButtons, HistoryPage, 46/46 tests pass) — v1.0 COMPLETE
 progress:
   total_phases: 4
-  completed_phases: 3
-  total_plans: 7
-  completed_plans: 7
-  percent: 88
+  completed_phases: 4
+  total_plans: 8
+  completed_plans: 8
+  percent: 100
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-15)
 
 **Core value:** A user can quickly log a wine and know exactly what they have in their cellar at any time.
-**Current focus:** Phase 4 — Lifecycle Tracking
+**Current focus:** v1.0 COMPLETE — all 4 phases delivered
 
 ## Current Position
 
-Phase: 3 of 4 (Tasting Notes) — COMPLETE
+Phase: 4 of 4 (Lifecycle Tracking) — COMPLETE
 Plan: 1 of 1 in current phase
-Status: Phase 3 complete — ready for Phase 4
-Last activity: 2026-05-15 — Completed 03-01-PLAN.md (TastingNotesEditor, WineDetailPage update, 37/37 tests)
+Status: ALL PHASES COMPLETE — v1.0 milestone delivered
+Last activity: 2026-05-15 — Completed 04-01-PLAN.md (PATCH /status, StatusTransitionButtons, HistoryPage, 46/46 tests)
 
-Progress: [████████████████████░] 88% (Phases 1+2+3 complete)
+Progress: [████████████████████] 100% (v1.0 COMPLETE — all 4 phases delivered)
 
 ## Performance Metrics
 
@@ -47,10 +47,13 @@ Progress: [████████████████████░] 88% 
 | 01-foundation | 3/3 | 14min | ~5min |
 | 02-core-wine-entry | 3/3 | ~24min | ~8min |
 | 03-tasting-notes | 1/1 | ~8min | ~8min |
+| 04-lifecycle-tracking | 1/1 | ~10min | ~10min |
+
+**Total:** 8 plans, ~56min, v1.0 COMPLETE
 
 **Recent Trend:**
 
-- Last 5 plans: 02-01 (8min), 02-02 (8min), 02-03 (8min), 03-01 (8min)
+- Last 5 plans: 02-03 (8min), 03-01 (8min), 04-01 (10min)
 - Trend: stable
 
 *Updated after each plan completion*
@@ -64,6 +67,7 @@ Progress: [████████████████████░] 88% 
 | Phase 02 P02 | 8min | 2 tasks | 12 files |
 | Phase 02 P03 | 8min | 2 tasks | 8 files |
 | Phase 03 P01 | 8min | 2 tasks | 5 files |
+| Phase 04 P01 | 10min | 2 tasks | 14 files |
 
 ## Accumulated Context
 
@@ -97,6 +101,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-05-15T21:30:00.000Z
-Stopped at: Completed 03-01-PLAN.md
+Last session: 2026-05-15T22:00:00.000Z
+Stopped at: Completed 04-01-PLAN.md — v1.0 COMPLETE
 Resume file: None
