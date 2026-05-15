@@ -14,8 +14,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Project scaffolding, tech stack, database schema, auth, and CI/CD pipeline
 - [x] **Phase 2: Core Wine Entry** - Users can add, view, and manage wines in their inventory
-- [x] **Phase 3: Tasting Notes** - Users can add and edit free-text tasting notes on any wine
-- [x] **Phase 4: Lifecycle Tracking** - Users can mark wines as consumed and manage status transitions
+- [ ] **Phase 3: Tasting Notes** - Users can add and edit free-text tasting notes on any wine
+- [ ] **Phase 4: Lifecycle Tracking** - Users can mark wines as consumed and manage status transitions
 
 ## Phase Details
 
@@ -39,7 +39,8 @@ Plans:
 - [x] 01-03-PLAN.md — React SPA shell (React Router, Zustand auth store, Axios client, page shells, LoginPage, Playwright e2e)
 
 ### Phase 2: Core Wine Entry
-**Status**: In Progress
+**Status**: completed (2026-05-15)
+**Last Updated**: 2026-05-15T20:10:00Z
 **Goal**: Users can add wines to their inventory and know exactly what they have at any time
 **Depends on**: Phase 1
 **Requirements**: WINE-01, WINE-02
@@ -93,5 +94,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | Complete | 2026-05-15 |
 | 2. Core Wine Entry | 3/3 | Complete | 2026-05-15 |
-| 3. Tasting Notes | 1/1 | Complete | 2026-05-15 |
-| 4. Lifecycle Tracking | 1/1 | Complete | 2026-05-15 |
+| 3. Tasting Notes | 0/1 | Not started | - |
+| 4. Lifecycle Tracking | 0/1 | Not started | - |
