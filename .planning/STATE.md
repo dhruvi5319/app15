@@ -3,15 +3,15 @@ pivota_spec_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-core-wine-entry-02-PLAN.md
-last_updated: "2026-05-15T19:52:41.849Z"
-last_activity: 2026-05-15 — Completed 02-01 Wine CRUD API (25/25 tests, 6 endpoints)
+stopped_at: Completed 02-core-wine-entry-03-PLAN.md
+last_updated: "2026-05-15T19:57:20.367Z"
+last_activity: 2026-05-15 — Completed 02-03 Add/edit forms + BottleCountControl (8 files)
 progress:
   total_phases: 4
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 6
-  completed_plans: 5
-  percent: 67
+  completed_plans: 6
+  percent: 100
 ---
 
 # Project State
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-05-15)
 
 ## Current Position
 
-Phase: 2 of 4 (Core Wine Entry) — executing
-Plan: 2 of 3 in current phase (02-01 and 02-02 complete)
-Status: Phase 2 executing — 02-01 and 02-02 done, 02-03 ready
-Last activity: 2026-05-15 — Completed 02-02 Inventory list + wine detail pages (12 files)
+Phase: 2 of 4 (Core Wine Entry) — COMPLETE
+Plan: 3 of 3 in current phase (all plans complete)
+Status: Phase 2 complete — all 3 plans done; ready for Phase 3 (Status Lifecycle)
+Last activity: 2026-05-15 — Completed 02-03 Add/edit forms + BottleCountControl (8 files)
 
-Progress: [████████░░] 83% (Phase 1 complete, Phase 2 plans 1-2/3 done)
+Progress: [██████████] 100% (Phase 1 complete, Phase 2 complete — 6/6 plans done)
 
 ## Performance Metrics
 
@@ -45,12 +45,12 @@ Progress: [████████░░] 83% (Phase 1 complete, Phase 2 plans 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-foundation | 3/3 | 14min | ~5min |
-| 02-core-wine-entry | 2/3 | 5min | ~2.5min |
+| 02-core-wine-entry | 3/3 | 7min | ~2.3min |
 
 **Recent Trend:**
 
-- Last 5 plans: 01-01 (6min), 01-02 (4min), 01-03 (4min), 02-01 (3min), 02-02 (2min)
-- Trend: ↓ Accelerating
+- Last 5 plans: 01-02 (4min), 01-03 (4min), 02-01 (3min), 02-02 (2min), 02-03 (2min)
+- Trend: ↓ Stable at 2-3min per plan
 
 *Updated after each plan completion*
 
@@ -61,6 +61,7 @@ Progress: [████████░░] 83% (Phase 1 complete, Phase 2 plans 
 | Phase 01-foundation P03 | 4min | 2 tasks | 20 files |
 | Phase 02-core-wine-entry P01 | 3min | 3 tasks | 9 files |
 | Phase 02-core-wine-entry P02 | 2min | 2 tasks | 12 files |
+| Phase 02-core-wine-entry P03 | 2min | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -87,6 +88,8 @@ Recent decisions affecting current work:
 - [Phase 02-core-wine-entry]: status field protected from PATCH via Zod schema omission: unknown fields stripped → empty body → 422
 - [Phase 02-core-wine-entry]: useWines queryKey includes full params object (['wines', params]) for per-query cache keying — separate cache entries per sort/filter/page combination
 - [Phase 02-core-wine-entry]: useWine accepts string | undefined (not string) — matches useParams return type, avoids non-null assertions in pages
+- [Phase 02-core-wine-entry]: WineForm.onSubmit accepts union type (CreateWineInput | UpdateWineInput) — pages cast internally to avoid TypeScript contravariance errors
+- [Phase 02-core-wine-entry]: BottleCountControl reads currentCount from parent prop (not internal state) — React Query cache updates cause parent re-render with new count
 
 ### Pending Todos
 
@@ -98,6 +101,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-05-15T19:52:41.848Z
-Stopped at: Completed 02-core-wine-entry-02-PLAN.md
+Last session: 2026-05-15T19:57:20.365Z
+Stopped at: Completed 02-core-wine-entry-03-PLAN.md
 Resume file: None
