@@ -93,5 +93,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | Complete | 2026-05-15 |
 | 2. Core Wine Entry | 3/3 | Complete | 2026-05-15 |
-| 3. Tasting Notes | 0/1 | Planned | - |
+| 3. Tasting Notes | 1/1 | Complete | 2026-05-15 |
 | 4. Lifecycle Tracking | 0/1 | Not started | - |
