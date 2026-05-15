@@ -25,6 +25,7 @@ This document specifies the detailed functional behavior of every feature in Win
 - **Pagination** defaults: `page=1`, `per_page=25`; max `per_page=100`.
 - **Authentication:** All API endpoints require a valid session token (Bearer JWT). Auth mechanism is defined in the TechArch document; this FRD assumes a single-user session model for v1.
 - Cross-references use the format `→ F03 §Process` or `→ Y0-schema.md §wines`.
+- **Network errors:** The application is online-only in v1. If any API request fails due to a network error or timeout, the client must display a visible, non-dismissable error message ("Could not save — please check your connection and try again") and keep the user's form/input intact so they can retry without data loss. Silent failures are not acceptable.
 
 ---
 
@@ -56,7 +57,7 @@ This document specifies the detailed functional behavior of every feature in Win
 | **Consumed** | A wine record status indicating all bottles have been intentionally opened/finished. |
 | **Removed** | A wine record status indicating bottles were sold, gifted, broken, or otherwise taken out without being consumed. |
 | **Tasting note** | Free-text user annotation capturing impressions of a wine. |
-| **Rating** | Numeric score assigned to a wine by the user (scale TBD at design time; default 1–100 or 1–5 stars). |
+| **Rating** | Numeric score assigned to a wine by the user on a **1–5 star scale** (integer 1–5; 1 = one star, 5 = five stars). |
 | **Producer** | The winery, estate, or brand that produced the wine. |
 | **Varietal** | The grape variety or blend designation (e.g., Cabernet Sauvignon, Chardonnay, Bordeaux Blend). |
 | **Region** | Geographic origin of the wine (e.g., Napa Valley, Burgundy, Barossa Valley). |
@@ -170,6 +171,7 @@ This document specifies the detailed functional behavior of every feature in Win
 | `rating` | number \| null | |
 | `date_added` | ISO 8601 string | UTC |
 | `date_updated` | ISO 8601 string | UTC |
+| `status_changed_at` | ISO 8601 string \| null | UTC; set when status transitions to `consumed`/`removed`; null when `active` |
 
 ---
 
@@ -374,7 +376,7 @@ Uses table `wines`. The list query filters on `user_id`, `status`, and `deleted_
 ### Terminology
 
 - **Free-text search:** A query string matched against `name`, `producer`, and `region` fields using case-insensitive partial matching.
-- **Structured filter:** A filter on a specific field with an exact or range value (varietal, region, vintage, producer).
+- **Structured filter:** A filter on a specific field using case-insensitive partial matching (varietal, region, producer) or exact/range value (vintage).
 - **Combined filters:** Multiple active filters applied simultaneously using AND logic.
 - **Match count:** The number of wine records returned by the current active query, displayed in the UI.
 - **Reset:** Clearing all active search terms and filters, returning to the full active inventory list.
@@ -408,7 +410,7 @@ Uses table `wines`. The list query filters on `user_id`, `status`, and `deleted_
 
 1. User selects one or more filter controls (varietal dropdown, region input, vintage year or range, producer input).
 2. Client sends `GET /wines` with the relevant filter parameters appended.
-3. Server applies each filter as an AND condition on top of `status = 'active'` and user scoping.
+3. Server applies each filter as an AND condition on top of `status = 'active'` and user scoping. Text filters (`varietal`, `region`, `producer`) use case-insensitive partial matching (`ILIKE`/`LIKE`). Vintage filters use exact or range matching.
 4. Server returns filtered results.
 
 #### F02.3 Combined Multi-Filter
@@ -440,7 +442,7 @@ Uses table `wines`. The list query filters on `user_id`, `status`, and `deleted_
 | Parameter | Type | Required | Constraints |
 |-----------|------|----------|-------------|
 | `q` | string | No | Free-text; max 255 chars; matched against name, producer, region |
-| `varietal` | string | No | Exact match (case-insensitive); max 255 chars |
+| `varietal` | string | No | Partial match (case-insensitive); max 255 chars |
 | `region` | string | No | Partial match (case-insensitive); max 255 chars |
 | `producer` | string | No | Partial match (case-insensitive); max 255 chars |
 | `vintage` | integer | No | Exact vintage year; 1800–current_year+5 |
@@ -788,7 +790,7 @@ Uses table `wines`. All columns rendered. No additional tables beyond `wines`. S
 ### Terminology
 
 - **Tasting note:** Free-form text entered by the user to record their impressions, aromas, flavors, and experience of a wine.
-- **Rating:** A numeric score assigned by the user. Scale is 1–100 (points) by default; design may select 1–5 stars, with the API accepting either scale as configured. This FRD uses the **1–100 scale** as the canonical default.
+- **Rating:** A numeric score assigned by the user on a **1–5 star scale**, stored as an integer (1–5 inclusive). 1 = one star (poor), 5 = five stars (outstanding). This is both the API value and the display value — no mapping or conversion layer is required.
 - **Null rating:** A wine with no rating assigned (`rating = null`). This is the default state.
 
 ---
@@ -817,8 +819,8 @@ Uses table `wines`. All columns rendered. No additional tables beyond `wines`. S
 
 #### F05.2 Add Rating
 
-1. User interacts with the rating control on the Wine Detail Page (star selector or numeric input).
-2. User selects a rating value between 1 and 100 (inclusive).
+1. User interacts with the star rating control on the Wine Detail Page (5-star selector).
+2. User selects a rating value between 1 and 5 (inclusive), where 1 = one star and 5 = five stars.
 3. Client sends `PATCH /wines/{wine_id}` with `{ "rating": <value> }`.
 4. Server validates the rating value.
 5. Server updates `wines.rating` and `date_updated`.
@@ -852,7 +854,7 @@ Uses table `wines`. All columns rendered. No additional tables beyond `wines`. S
 | Field | Type | Required | Constraints |
 |-------|------|----------|-------------|
 | `tasting_notes` | string \| null | No | No character limit; `null` to clear |
-| `rating` | integer \| null | No | 1–100 inclusive; `null` to clear |
+| `rating` | integer \| null | No | 1–5 inclusive (stars); `null` to clear |
 
 ---
 
@@ -860,16 +862,16 @@ Uses table `wines`. All columns rendered. No additional tables beyond `wines`. S
 
 Updated wine object (see → F00 Outputs) with:
 - `tasting_notes`: string or null
-- `rating`: integer (1–100) or null
+- `rating`: integer (1–5) or null
 
 ---
 
 ### Validation
 
 - `tasting_notes`, if provided, must be a string or `null`. Empty string `""` is treated as `null` (no notes stored).
-- `rating`, if provided, must be an integer between 1 and 100 inclusive, or `null`.
+- `rating`, if provided, must be an integer between 1 and 5 inclusive, or `null`.
 - `rating` of 0 is not valid (scale starts at 1).
-- Decimal rating values (e.g., 87.5) are rejected; only integers accepted.
+- Decimal rating values (e.g., 4.5) are rejected; only integers accepted.
 - `tasting_notes` and `rating` fields are independent — one can be set without affecting the other.
 
 ---
@@ -878,10 +880,10 @@ Updated wine object (see → F00 Outputs) with:
 
 | Scenario | HTTP Status | Error Code | Message |
 |----------|-------------|------------|---------|
-| `rating` < 1 | 422 | `VALIDATION_ERROR` | "rating must be between 1 and 100" |
-| `rating` > 100 | 422 | `VALIDATION_ERROR` | "rating must be between 1 and 100" |
+| `rating` < 1 | 422 | `VALIDATION_ERROR` | "rating must be between 1 and 5" |
+| `rating` > 5 | 422 | `VALIDATION_ERROR` | "rating must be between 1 and 5" |
 | `rating` is a decimal | 422 | `VALIDATION_ERROR` | "rating must be a whole number" |
-| `rating` is 0 | 422 | `VALIDATION_ERROR` | "rating must be between 1 and 100" |
+| `rating` is 0 | 422 | `VALIDATION_ERROR` | "rating must be between 1 and 5" |
 | Wine not found | 404 | `NOT_FOUND` | "Wine not found" |
 | Unauthenticated request | 401 | `UNAUTHORIZED` | "Authentication required" |
 | Wine belongs to another user | 403 | `FORBIDDEN` | "Access denied" |
@@ -900,7 +902,7 @@ See `Y1-api.md` §Tasting Notes & Ratings for full request/response schemas.
 
 ### Schema Surface (this feature)
 
-Uses columns `wines.tasting_notes` (TEXT, nullable) and `wines.rating` (SMALLINT, nullable, check 1–100) in the `wines` table. See `Y0-schema.md` §wines for full DDL.
+Uses columns `wines.tasting_notes` (TEXT, nullable) and `wines.rating` (SMALLINT, nullable, check 1–5) in the `wines` table. See `Y0-schema.md` §wines for full DDL.
 
 ---
 
@@ -941,19 +943,20 @@ Uses columns `wines.tasting_notes` (TEXT, nullable) and `wines.rating` (SMALLINT
 1. User triggers "Mark as Consumed" from the list view row or detail page.
 2. Client sends `PATCH /wines/{wine_id}/status` with `{ "status": "consumed" }`.
 3. Server validates the transition: wine must currently be `active`.
-4. Server sets `wines.status = 'consumed'` and `date_updated = now()`.
-5. Server returns `200 OK` with updated wine object.
+4. Server sets `wines.status = 'consumed'`, `date_updated = now()`, and `status_changed_at = now()`.
+5. Server returns `200 OK` with updated wine object (including `status_changed_at`).
 6. Client removes the wine from the active inventory list.
-7. The wine remains accessible in the history view (→ F06.4).
+7. The wine remains accessible in the history view (→ F06.4), where `status_changed_at` is displayed as "Consumed on [date]".
 
 #### F06.2 Mark as Removed
 
 1. User triggers "Mark as Removed" from the list view row or detail page.
 2. Client sends `PATCH /wines/{wine_id}/status` with `{ "status": "removed" }`.
 3. Server validates the transition: wine must currently be `active`.
-4. Server sets `wines.status = 'removed'` and `date_updated = now()`.
-5. Server returns `200 OK` with updated wine object.
+4. Server sets `wines.status = 'removed'`, `date_updated = now()`, and `status_changed_at = now()`.
+5. Server returns `200 OK` with updated wine object (including `status_changed_at`).
 6. Client removes the wine from the active inventory list.
+7. The wine is accessible in the history view, where `status_changed_at` is displayed as "Removed on [date]".
 
 #### F06.3 Revert to Active
 
@@ -961,7 +964,7 @@ Uses columns `wines.tasting_notes` (TEXT, nullable) and `wines.rating` (SMALLINT
 2. User triggers "Revert to Active" action.
 3. Client sends `PATCH /wines/{wine_id}/status` with `{ "status": "active" }`.
 4. Server validates: wine must be `consumed` or `removed`.
-5. Server sets `wines.status = 'active'` and `date_updated = now()`.
+5. Server sets `wines.status = 'active'`, `date_updated = now()`, and `status_changed_at = NULL`.
 6. Server returns `200 OK` with updated wine object.
 7. Wine reappears in the active inventory list.
 
@@ -992,7 +995,7 @@ Uses columns `wines.tasting_notes` (TEXT, nullable) and `wines.rating` (SMALLINT
 
 ### Outputs
 
-Updated wine object (see → F00 Outputs) with `status` field reflecting the new state.
+Updated wine object (see → F00 Outputs) with `status` and `status_changed_at` fields reflecting the new state. `status_changed_at` is set to the transition timestamp for `consumed`/`removed` transitions, and `null` for revert-to-`active` transitions.
 
 ---
 
@@ -1044,7 +1047,7 @@ See `Y1-api.md` §Status Transitions for full request/response schemas.
 
 ### Schema Surface (this feature)
 
-Uses `wines.status` column (enum: `active`, `consumed`, `removed`; default `active`). An index on `(user_id, status)` supports history view queries. See `Y0-schema.md` §wines.
+Uses `wines.status` column (enum: `active`, `consumed`, `removed`; default `active`) and `wines.status_changed_at` (TIMESTAMPTZ, nullable). `status_changed_at` is set to `now()` on transitions to `consumed`/`removed` and set to `NULL` on revert to `active`. An index on `(user_id, status)` supports history view queries. See `Y0-schema.md` §wines.
 
 ---
 
@@ -1097,11 +1100,12 @@ CREATE TABLE wines (
     -- Tasting
     tasting_notes   TEXT,
     rating          SMALLINT
-                        CHECK (rating IS NULL OR (rating >= 1 AND rating <= 100)),
+                        CHECK (rating IS NULL OR (rating >= 1 AND rating <= 5)),
 
     -- Timestamps
     date_added      TIMESTAMPTZ NOT NULL DEFAULT now(),
     date_updated    TIMESTAMPTZ NOT NULL DEFAULT now(),
+    status_changed_at TIMESTAMPTZ,          -- set when status transitions to consumed/removed; cleared on revert to active
 
     -- Soft delete (optional; supports auditing)
     deleted_at      TIMESTAMPTZ
@@ -1188,8 +1192,9 @@ users (1) ──< wines (many)
 
 wines (1) has:
   - tasting_notes (inline column)
-  - rating (inline column)
+  - rating (inline column, 1–5 stars)
   - status: active | consumed | removed
+  - status_changed_at (set on consumed/removed transition; null when active)
 ```
 
 All tasting notes and rating data live directly on the `wines` row. No separate notes table is needed in v1.
@@ -1202,7 +1207,7 @@ All tasting notes and rating data live directly on the `wines` row. No separate 
 |-------|--------|-----------|
 | `wines` | `bottle_count` | `>= 0 AND <= 9999` |
 | `wines` | `vintage` | `IS NULL OR (>= 1800 AND <= 2099)` |
-| `wines` | `rating` | `IS NULL OR (>= 1 AND <= 100)` |
+| `wines` | `rating` | `IS NULL OR (>= 1 AND <= 5)` |
 | `wines` | `status` | ENUM: `active`, `consumed`, `removed` |
 | `wines` | `name` | `NOT NULL`, max 255 chars |
 | `users` | `email` | `NOT NULL UNIQUE` |
@@ -1221,6 +1226,42 @@ All tasting notes and rating data live directly on the `wines` row. No separate 
 ### §Auth
 
 > Auth endpoints depend on the TechArch stack decision. The following are representative endpoints for a self-hosted JWT model. If an external auth provider (e.g., Auth0, Supabase Auth) is used, these endpoints may be replaced by provider-specific flows.
+
+#### POST /auth/register
+
+Create a new user account. This is the entry point for all new users.
+
+**Required fields:** `email` (valid email format, max 255 chars), `password` (min 8 characters).
+
+**Process:**
+1. User submits email and password on the sign-up screen (single screen — no profile wizard, no extra steps).
+2. Server validates email uniqueness and password length.
+3. Server creates a user record and issues an access token + refresh token.
+4. Server responds `201 Created` with tokens. A welcome/verification email is sent asynchronously but does **not** gate the user's ability to add wines.
+5. Client receives tokens, stores them, and navigates the user **directly to the Add Wine form** (F00 create flow).
+
+**Request:**
+```json
+{
+  "email": "string",
+  "password": "string"
+}
+```
+
+**Response 201:**
+```json
+{
+  "access_token": "string (JWT)",
+  "refresh_token": "string",
+  "expires_in": 3600
+}
+```
+
+**Errors:**
+- `422 VALIDATION_ERROR` — email missing/invalid, password too short
+- `409 CONFLICT` — email already registered (error code: `EMAIL_IN_USE`, message: "An account with this email already exists")
+
+---
 
 #### POST /auth/login
 
@@ -1310,7 +1351,8 @@ Create a new wine record.
   "tasting_notes": null,
   "rating": null,
   "date_added": "ISO 8601",
-  "date_updated": "ISO 8601"
+  "date_updated": "ISO 8601",
+  "status_changed_at": null
 }
 ```
 
@@ -1544,6 +1586,7 @@ All API errors return JSON in the following shape:
 | Error Code | HTTP Status | Feature | Description | Retry? |
 |-----------|-------------|---------|-------------|--------|
 | `UNAUTHORIZED` | 401 | All | JWT token missing, expired, or invalid | Re-authenticate |
+| `EMAIL_IN_USE` | 409 | Auth | Email address already registered | Use a different email or log in |
 | `FORBIDDEN` | 403 | All | Authenticated user does not own the requested resource | No |
 | `NOT_FOUND` | 404 | F00, F03, F04, F06 | Wine record with given ID does not exist (or was hard-deleted) | No |
 | `INVALID_ID` | 400 | F00, F04 | Path parameter `wine_id` is not a valid UUID | Fix request |
@@ -1566,7 +1609,7 @@ All API errors return JSON in the following shape:
 | `vintage` | Out of range | "vintage must be between 1800 and [current_year+5]" |
 | `bottle_count` | Below 0 | "bottle_count cannot be negative" |
 | `bottle_count` | Exceeds 9999 | "bottle_count cannot exceed 9999" |
-| `rating` | Out of range (not 1–100) | "rating must be between 1 and 100" |
+| `rating` | Out of range (not 1–5) | "rating must be between 1 and 5" |
 | `rating` | Not an integer | "rating must be a whole number" |
 | `sort` | Unknown value | "sort must be one of: name, vintage, producer, date_added" |
 | `direction` | Unknown value | "direction must be asc or desc" |

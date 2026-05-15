@@ -50,11 +50,12 @@ CREATE TABLE wines (
     -- Tasting
     tasting_notes   TEXT,
     rating          SMALLINT
-                        CHECK (rating IS NULL OR (rating >= 1 AND rating <= 100)),
+                        CHECK (rating IS NULL OR (rating >= 1 AND rating <= 5)),
 
     -- Timestamps
     date_added      TIMESTAMPTZ NOT NULL DEFAULT now(),
     date_updated    TIMESTAMPTZ NOT NULL DEFAULT now(),
+    status_changed_at TIMESTAMPTZ,          -- set when status transitions to consumed/removed; cleared on revert to active
 
     -- Soft delete (optional; supports auditing)
     deleted_at      TIMESTAMPTZ
@@ -141,7 +142,8 @@ users (1) ──< wines (many)
 
 wines (1) has:
   - tasting_notes (inline column)
-  - rating (inline column)
+  - rating (inline column, 1–5 stars)
+  - status_changed_at (set on consumed/removed; null when active)
   - status: active | consumed | removed
 ```
 
@@ -155,7 +157,7 @@ All tasting notes and rating data live directly on the `wines` row. No separate 
 |-------|--------|-----------|
 | `wines` | `bottle_count` | `>= 0 AND <= 9999` |
 | `wines` | `vintage` | `IS NULL OR (>= 1800 AND <= 2099)` |
-| `wines` | `rating` | `IS NULL OR (>= 1 AND <= 100)` |
+| `wines` | `rating` | `IS NULL OR (>= 1 AND <= 5)` |
 | `wines` | `status` | ENUM: `active`, `consumed`, `removed` |
 | `wines` | `name` | `NOT NULL`, max 255 chars |
 | `users` | `email` | `NOT NULL UNIQUE` |

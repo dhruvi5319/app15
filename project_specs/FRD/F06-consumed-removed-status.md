@@ -38,19 +38,20 @@
 1. User triggers "Mark as Consumed" from the list view row or detail page.
 2. Client sends `PATCH /wines/{wine_id}/status` with `{ "status": "consumed" }`.
 3. Server validates the transition: wine must currently be `active`.
-4. Server sets `wines.status = 'consumed'` and `date_updated = now()`.
-5. Server returns `200 OK` with updated wine object.
+4. Server sets `wines.status = 'consumed'`, `date_updated = now()`, and `status_changed_at = now()`.
+5. Server returns `200 OK` with updated wine object (including `status_changed_at`).
 6. Client removes the wine from the active inventory list.
-7. The wine remains accessible in the history view (→ F06.4).
+7. The wine remains accessible in the history view (→ F06.4), where `status_changed_at` is displayed as "Consumed on [date]".
 
 #### F06.2 Mark as Removed
 
 1. User triggers "Mark as Removed" from the list view row or detail page.
 2. Client sends `PATCH /wines/{wine_id}/status` with `{ "status": "removed" }`.
 3. Server validates the transition: wine must currently be `active`.
-4. Server sets `wines.status = 'removed'` and `date_updated = now()`.
-5. Server returns `200 OK` with updated wine object.
+4. Server sets `wines.status = 'removed'`, `date_updated = now()`, and `status_changed_at = now()`.
+5. Server returns `200 OK` with updated wine object (including `status_changed_at`).
 6. Client removes the wine from the active inventory list.
+7. The wine is accessible in the history view, where `status_changed_at` is displayed as "Removed on [date]".
 
 #### F06.3 Revert to Active
 
@@ -58,7 +59,7 @@
 2. User triggers "Revert to Active" action.
 3. Client sends `PATCH /wines/{wine_id}/status` with `{ "status": "active" }`.
 4. Server validates: wine must be `consumed` or `removed`.
-5. Server sets `wines.status = 'active'` and `date_updated = now()`.
+5. Server sets `wines.status = 'active'`, `date_updated = now()`, and `status_changed_at = NULL`.
 6. Server returns `200 OK` with updated wine object.
 7. Wine reappears in the active inventory list.
 
@@ -141,4 +142,4 @@ See `Y1-api.md` §Status Transitions for full request/response schemas.
 
 ### Schema Surface (this feature)
 
-Uses `wines.status` column (enum: `active`, `consumed`, `removed`; default `active`). An index on `(user_id, status)` supports history view queries. See `Y0-schema.md` §wines.
+Uses `wines.status` column (enum: `active`, `consumed`, `removed`; default `active`) and `wines.status_changed_at` (TIMESTAMPTZ, nullable). `status_changed_at` is set to `now()` on transitions to `consumed`/`removed` and set to `NULL` on revert to `active`. An index on `(user_id, status)` supports history view queries. See `Y0-schema.md` §wines.

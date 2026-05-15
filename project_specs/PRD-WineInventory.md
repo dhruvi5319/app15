@@ -138,7 +138,7 @@ The result is that many collectors give up on tracking altogether and resort to 
 
 **Capabilities:**
 - Add free-text tasting notes to any wine (no character limit)
-- Assign a rating on a simple scale (e.g. 1–5 stars or 1–100 points; scale to be decided during design)
+- Assign a rating on a **1–5 star scale** (stored as integer 1–5; no conversion layer)
 - Edit or delete notes and ratings at any time
 - Notes and ratings visible on the wine detail page
 - Notes and ratings persist even after a wine is marked as consumed
@@ -189,6 +189,8 @@ The result is that many collectors give up on tracking altogether and resort to 
 - **Tasting notes adoption:** ≥ 30% of wines in collections larger than 20 bottles have at least one tasting note
 - **Crash / error rate:** < 0.5% of user sessions encounter an unhandled error
 
+> **Measurement note:** Behavioural metrics (activation, retention, data entry speed, search adoption) require session analytics instrumentation (e.g., Mixpanel, Amplitude, or equivalent). Analytics integration is deferred to a post-launch phase (see `Y3-integrations.md`). At v1 launch, count accuracy and crash rate can be measured directly from database and server error logs. Behavioural targets are aspirational goals for v1 and will be measured retroactively once analytics tooling is in place.
+
 ---
 
 ## 8. Risks & Mitigations
@@ -202,6 +204,7 @@ The result is that many collectors give up on tracking altogether and resort to 
 | Mobile usability is poor (no native app) | Medium | Medium | Design mobile-first responsive layout; test on real devices during QA |
 | Tech stack choice creates long-term maintenance burden | Low | Medium | Prefer well-supported, widely-adopted frameworks; document decision rationale in TechArch |
 | Vintage year data entry errors (e.g. 2204 instead of 2024) | Low | Low | Add client-side validation: vintage must be between 1800 and current year + 5 |
+| Network failure causes silent data loss (e.g. Marcus adds wine in a parking lot on poor signal) | Medium | High | v1 is online-only; any API failure surfaces a visible error and preserves the user's form input for retry. No silent failures. Offline-first queue deferred to v2. |
 
 ---
 

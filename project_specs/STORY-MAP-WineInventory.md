@@ -283,7 +283,7 @@ Verifies that each NaC is grounded in the UserStory acceptance criteria from `Us
 
 | Story | NaC | Verified Against AC |
 |---|---|---|
-| US-0.1 | Wine saved with name only in ≤ 20 seconds; no required fields beyond name | AC: "Only the `name` field is required; submits in under 30 seconds for a first-time user" ✓ |
+| US-0.1 | Wine saved with name only in ≤ 20 seconds; no required fields beyond name | AC: "Only the `name` field is required; submits in under 20 seconds for a first-time user" ✓ |
 | US-0.2 | All six fields saved in ≤ 45 seconds on mobile | AC: "Full-details entry completes in under 60 seconds for a first-time user" — NaC tightens to JTBD-01.1's 45s mobile target ✓ |
 | US-0.3 | Field correctable from list or detail without re-entry | AC: "Edit form is accessible from both the List View and the Wine Detail Page; validation errors preserve previous values" ✓ |
 | US-0.4 | Deletion requires explicit confirmation; all notes removed | AC: "Clicking Delete shows confirmation dialog; confirmed deletion permanently removes the wine record and all associated tasting notes" ✓ |
@@ -303,7 +303,7 @@ Verifies that each NaC is grounded in the UserStory acceptance criteria from `Us
 | US-4.2 | Inline field edit on detail; saves with Enter/tap-away | AC: "Field transitions to text input; confirming with Enter or tap-away saves; On success, field reverts to display mode" ✓ |
 | US-4.3 | Count controls + status transitions + delete all on detail | AC: "Detail page shows `+`/`−` controls, exact-count input, status badge, 'Mark as Consumed', 'Mark as Removed', 'Revert to Active', and Delete button" ✓ |
 | US-5.1 | Inline note field on detail; no character limit; autosave | AC: "Tapping the area opens an inline text area; No character limit; Saving sends PATCH with tasting_notes" ✓ |
-| US-5.2 | Rating in 1 tap; integers 1–100; independent of notes | AC: "Rating accepts integers 1–100 inclusive; Rating can be set independently of tasting notes" ✓ |
+| US-5.2 | Rating in 1 tap; integers 1–5 (stars); independent of notes | AC: "Rating accepts integers 1–5 inclusive (1–5 star scale); Rating can be set independently of tasting notes" ✓ |
 | US-5.3 | Note and rating editable/clearable at any status | AC: "Edit and delete actions are available regardless of the wine's status (active, consumed, removed)" ✓ |
 | US-5.4 | Marking consumed does not clear note or rating | AC: "Marking a wine as consumed or removed does NOT clear `tasting_notes` or `rating`; Notes and rating visible in the history view" ✓ |
 | US-6.1 | "Mark as Consumed" in ≤ 2 taps; wine exits active list | AC: "Triggering the action sends PATCH status=consumed; on success wine is removed from active inventory list; tasting notes and rating intact" ✓ |

@@ -165,7 +165,7 @@ When the end-of-month reorder review arrives or the head sommelier asks what has
 ### JTBD-03.1: Log a Wine Before the Moment Passes
 
 **Job Statement:**
-When I am at a restaurant, a friend's dinner, or just opening a bottle at home, I want to log the wine by name alone in under 30 seconds on my phone without needing to know the varietal or region, so I have a persistent record I can revisit later instead of relying on Instagram stories and memory that fade within days.
+When I am at a restaurant, a friend's dinner, or just opening a bottle at home, I want to log the wine by name alone in under 20 seconds on my phone without needing to know the varietal or region, so I have a persistent record I can revisit later instead of relying on Instagram stories and memory that fade within days.
 
 **Current Alternatives:**
 - Posts a photo of the bottle to Instagram Stories — disappears after 24 hours and is unsearchable

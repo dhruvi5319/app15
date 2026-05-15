@@ -36,14 +36,14 @@ The core CRUD flow that allows users to add, edit, and delete wine records. Ever
 ---
 
 ### US-0.1: Quick-Add a Wine by Name Only
-**As a** Priya Nair, **I want to** add a wine by typing only its name, **so that** I can log a bottle I just bought or enjoyed in under 30 seconds without needing wine expertise.
+**As a** Priya Nair, **I want to** add a wine by typing only its name, **so that** I can log a bottle I just bought or enjoyed in under 20 seconds without needing wine expertise.
 
 **Acceptance Criteria:**
 - [ ] Add Wine form is accessible in no more than 2 taps/clicks from the home screen
 - [ ] Only the `name` field is required; all other fields (producer, vintage, varietal, region, bottle count) are optional
 - [ ] Submitting with only a name creates a valid wine record with `status = 'active'` and `bottle_count = 1`
 - [ ] A whitespace-only name is rejected with an inline error: "name is required"
-- [ ] The form submits successfully in under 30 seconds for a first-time user
+- [ ] The form submits successfully in under 20 seconds for a first-time user
 - [ ] After submission, the user is navigated to the Wine Detail Page or back to the List View
 
 **Priority:** P0 | **Feature Ref:** F0
@@ -189,7 +189,7 @@ Fast, flexible lookup across the collection by any key dimension. Results update
 **As a** Marcus Webb, **I want to** filter my wines by varietal, region, vintage year, or producer, **so that** I can quickly see all the Pinot Noirs from a specific region or all wines from a particular vintage.
 
 **Acceptance Criteria:**
-- [ ] Filter controls are available for: varietal (exact match), region (partial match), vintage year (exact or range: vintage_from / vintage_to), producer (partial match)
+- [ ] Filter controls are available for: varietal (partial match, case-insensitive), region (partial match, case-insensitive), vintage year (exact or range: vintage_from / vintage_to), producer (partial match, case-insensitive)
 - [ ] Filters are case-insensitive
 - [ ] Vintage filters accept integers in range 1800–(current year + 5) only
 - [ ] `vintage_from` must be ≤ `vintage_to` when both are supplied; otherwise a 422 error is shown
@@ -364,11 +364,11 @@ Allow users to capture their impressions of a wine alongside its inventory recor
 **As a** Priya Nair, **I want to** give a wine a quick numeric rating on its detail page, **so that** I can compare bottles later without writing a full review.
 
 **Acceptance Criteria:**
-- [ ] A rating control (star selector or numeric input) is visible on the wine detail page
-- [ ] Rating accepts integers 1–100 inclusive (or equivalent star scale as configured)
-- [ ] Rating of 0, decimals, or values outside 1–100 are rejected with "rating must be between 1 and 100" or "rating must be a whole number"
+- [ ] A 5-star rating control is visible on the wine detail page
+- [ ] Rating accepts integers 1–5 inclusive (1 = one star, 5 = five stars)
+- [ ] Rating of 0, decimals, or values outside 1–5 are rejected with "rating must be between 1 and 5" or "rating must be a whole number"
 - [ ] Saving a rating sends `PATCH /wines/{wine_id}` with `{ "rating": <value> }`
-- [ ] On success, the rating is displayed on the detail page
+- [ ] On success, the rating is displayed on the detail page as the corresponding star count
 - [ ] Rating can be set independently of tasting notes in separate requests
 
 **Priority:** P1 | **Feature Ref:** F5

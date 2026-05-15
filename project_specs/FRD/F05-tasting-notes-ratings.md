@@ -13,7 +13,7 @@
 ### Terminology
 
 - **Tasting note:** Free-form text entered by the user to record their impressions, aromas, flavors, and experience of a wine.
-- **Rating:** A numeric score assigned by the user. Scale is 1–100 (points) by default; design may select 1–5 stars, with the API accepting either scale as configured. This FRD uses the **1–100 scale** as the canonical default.
+- **Rating:** A numeric score assigned by the user on a **1–5 star scale**, stored as an integer (1–5 inclusive). 1 = one star, 5 = five stars. No mapping or conversion layer is required.
 - **Null rating:** A wine with no rating assigned (`rating = null`). This is the default state.
 
 ---
@@ -42,8 +42,8 @@
 
 #### F05.2 Add Rating
 
-1. User interacts with the rating control on the Wine Detail Page (star selector or numeric input).
-2. User selects a rating value between 1 and 100 (inclusive).
+1. User interacts with the 5-star rating control on the Wine Detail Page.
+2. User selects a rating value between 1 and 5 (inclusive), where 1 = one star and 5 = five stars.
 3. Client sends `PATCH /wines/{wine_id}` with `{ "rating": <value> }`.
 4. Server validates the rating value.
 5. Server updates `wines.rating` and `date_updated`.
@@ -77,7 +77,7 @@
 | Field | Type | Required | Constraints |
 |-------|------|----------|-------------|
 | `tasting_notes` | string \| null | No | No character limit; `null` to clear |
-| `rating` | integer \| null | No | 1–100 inclusive; `null` to clear |
+| `rating` | integer \| null | No | 1–5 inclusive (stars); `null` to clear |
 
 ---
 
@@ -85,16 +85,16 @@
 
 Updated wine object (see → F00 Outputs) with:
 - `tasting_notes`: string or null
-- `rating`: integer (1–100) or null
+- `rating`: integer (1–5) or null
 
 ---
 
 ### Validation
 
 - `tasting_notes`, if provided, must be a string or `null`. Empty string `""` is treated as `null` (no notes stored).
-- `rating`, if provided, must be an integer between 1 and 100 inclusive, or `null`.
+- `rating`, if provided, must be an integer between 1 and 5 inclusive, or `null`.
 - `rating` of 0 is not valid (scale starts at 1).
-- Decimal rating values (e.g., 87.5) are rejected; only integers accepted.
+- Decimal rating values (e.g., 4.5) are rejected; only integers accepted.
 - `tasting_notes` and `rating` fields are independent — one can be set without affecting the other.
 
 ---
@@ -103,10 +103,10 @@ Updated wine object (see → F00 Outputs) with:
 
 | Scenario | HTTP Status | Error Code | Message |
 |----------|-------------|------------|---------|
-| `rating` < 1 | 422 | `VALIDATION_ERROR` | "rating must be between 1 and 100" |
-| `rating` > 100 | 422 | `VALIDATION_ERROR` | "rating must be between 1 and 100" |
+| `rating` < 1 | 422 | `VALIDATION_ERROR` | "rating must be between 1 and 5" |
+| `rating` > 5 | 422 | `VALIDATION_ERROR` | "rating must be between 1 and 5" |
 | `rating` is a decimal | 422 | `VALIDATION_ERROR` | "rating must be a whole number" |
-| `rating` is 0 | 422 | `VALIDATION_ERROR` | "rating must be between 1 and 100" |
+| `rating` is 0 | 422 | `VALIDATION_ERROR` | "rating must be between 1 and 5" |
 | Wine not found | 404 | `NOT_FOUND` | "Wine not found" |
 | Unauthenticated request | 401 | `UNAUTHORIZED` | "Authentication required" |
 | Wine belongs to another user | 403 | `FORBIDDEN` | "Access denied" |
@@ -125,4 +125,4 @@ See `Y1-api.md` §Tasting Notes & Ratings for full request/response schemas.
 
 ### Schema Surface (this feature)
 
-Uses columns `wines.tasting_notes` (TEXT, nullable) and `wines.rating` (SMALLINT, nullable, check 1–100) in the `wines` table. See `Y0-schema.md` §wines for full DDL.
+Uses columns `wines.tasting_notes` (TEXT, nullable) and `wines.rating` (SMALLINT, nullable, check 1–5) in the `wines` table. See `Y0-schema.md` §wines for full DDL.

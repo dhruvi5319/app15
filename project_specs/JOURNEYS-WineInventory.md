@@ -261,7 +261,7 @@ Sofia finds all available Burgundy Pinot Noir wines with bottle counts in under 
 | Stage | Action | Touchpoint | Thinking | Feeling | Pain Point | Opportunity |
 |---|---|---|---|---|---|---|
 | **Trigger** | Takes a photo of the label; decides to log it properly this time | Phone camera / app | "I always say I'll remember and I never do. Let me actually log this." | Motivated, slightly self-aware | Previously posted to Instagram Stories — disappears in 24 hours, unsearchable | Subtle onboarding nudge: "Your first wine — it takes less than 20 seconds." |
-| **Open App / Sign Up** | Opens the app for the first time; completes minimal sign-up | Onboarding / F0 — Add Wine | "Please don't make me fill in a profile before I can add a wine." | Impatient, cautious | Most wine apps require account setup, preferences, or a tutorial before the first useful action | Progressive onboarding: first action is "Add a wine" — account created implicitly after first save |
+| **Open App / Sign Up** | Opens the app for the first time; enters email and password on a single screen; lands directly on the Add Wine form | Onboarding / F0 — Add Wine | "Please don't make me fill in a profile before I can add a wine." | Impatient, cautious | Most wine apps require account setup, preferences, or a tutorial before the first useful action | Single-screen signup (email + password only); no profile wizard; no email verification gate — user lands on the Add Wine form immediately after signing up |
 | **Add Wine by Name** | Types the wine name; ignores all optional fields; taps Save | F0 — Add Wine form (mobile) | "Just the name — I don't know the varietal or region off the top of my head. Can I save now?" | Tentative | Apps that require varietal or vintage before saving create instant abandonment | Name-only save enabled by default; optional fields collapsed below the fold with a "Add more details" toggle |
 | **See It in the List** | Wine appears in her inventory immediately | F1 — Inventory list | "Oh — that was actually really fast. And there it is." | Pleasantly surprised, delighted | Expected a slow or broken experience based on previous wine apps she tried | Immediate in-list confirmation; gentle prompt: "Want to add a rating while you remember?" |
 | **Add a Quick Rating** | Taps the star rating directly from the list or a one-tap prompt | F5 — Tasting Notes & Ratings | "Four stars. Done. I can add a proper note later." | Satisfied, smiling | Star rating buried on a detail page adds a navigation step that breaks the moment | Inline star rating on the add-confirmation screen or as an overlay — one tap, no navigation |
@@ -269,7 +269,7 @@ Sofia finds all available Burgundy Pinot Noir wines with bottle counts in under 
 #### Key Moments
 
 - **Decision Point:** Add Wine by Name stage — if the form blocks save without more fields, Priya closes the app and never returns.
-- **Risk of Abandonment:** Open App / Sign Up stage — friction in onboarding (email verification, profile wizard) causes immediate drop-off before a single wine is logged.
+- **Risk of Abandonment:** Open App / Sign Up stage — friction in onboarding (email verification gate, profile wizard, or multiple steps before the Add Wine form) causes immediate drop-off before a single wine is logged. The signup screen must be a single step: email + password, then directly to Add Wine.
 - **Delight Opportunity:** See It in the List stage — the wine appearing instantly creates an "aha" moment that converts a first-time user into a returning one.
 
 #### Success Outcome

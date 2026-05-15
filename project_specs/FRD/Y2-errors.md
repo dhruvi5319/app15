@@ -68,7 +68,7 @@ All API errors return JSON in the following shape:
 | `vintage` | Out of range | "vintage must be between 1800 and [current_year+5]" |
 | `bottle_count` | Below 0 | "bottle_count cannot be negative" |
 | `bottle_count` | Exceeds 9999 | "bottle_count cannot exceed 9999" |
-| `rating` | Out of range (not 1–100) | "rating must be between 1 and 100" |
+| `rating` | Out of range (not 1–5) | "rating must be between 1 and 5" |
 | `rating` | Not an integer | "rating must be a whole number" |
 | `sort` | Unknown value | "sort must be one of: name, vintage, producer, date_added" |
 | `direction` | Unknown value | "direction must be asc or desc" |

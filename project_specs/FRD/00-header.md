@@ -56,7 +56,7 @@ This document specifies the detailed functional behavior of every feature in Win
 | **Consumed** | A wine record status indicating all bottles have been intentionally opened/finished. |
 | **Removed** | A wine record status indicating bottles were sold, gifted, broken, or otherwise taken out without being consumed. |
 | **Tasting note** | Free-text user annotation capturing impressions of a wine. |
-| **Rating** | Numeric score assigned to a wine by the user (scale TBD at design time; default 1–100 or 1–5 stars). |
+| **Rating** | Numeric score assigned to a wine by the user on a **1–5 star scale** (integer 1–5; 1 = one star, 5 = five stars). |
 | **Producer** | The winery, estate, or brand that produced the wine. |
 | **Varietal** | The grape variety or blend designation (e.g., Cabernet Sauvignon, Chardonnay, Bordeaux Blend). |
 | **Region** | Geographic origin of the wine (e.g., Napa Valley, Burgundy, Barossa Valley). |
