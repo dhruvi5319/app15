@@ -48,12 +48,12 @@ Plans:
   3. User can view their full wine inventory as a browsable, sortable list showing key at-a-glance fields
   4. User can open a wine detail page and see all stored information for that wine
   5. User can edit any field on an existing wine record and see the change reflected instantly
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 02-01: Wine CRUD API (POST, GET, PATCH, DELETE /wines)
-- [ ] 02-02: Inventory list view and wine detail page (frontend)
-- [ ] 02-03: Add/edit wine forms and bottle count controls (frontend)
+- [ ] 02-01-PLAN.md — Wine CRUD API + bottle-count endpoint + migration 007 (status_changed_at) + integration tests
+- [ ] 02-02-PLAN.md — Inventory list page + wine detail page (React Query hooks, WineCard, EmptyState, StatusBadge, ConfirmDialog)
+- [ ] 02-03-PLAN.md — Add/edit wine forms (WineForm, BottleCountControl with optimistic UI, AddWinePage, EditWinePage)
 
 ### Phase 3: Tasting Notes
 **Goal**: Users can capture and update their personal impressions of any wine in their inventory
