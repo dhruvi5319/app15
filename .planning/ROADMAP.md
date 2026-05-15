@@ -1,0 +1,94 @@
+# Roadmap: Wine Inventory App
+
+## Overview
+
+Greenfield delivery of a personal wine cellar management application. The journey moves from project scaffolding and data foundation, through core wine entry (the central user value), to enrichment with tasting notes and lifecycle tracking. Every phase delivers a coherent, verifiable capability before the next begins.
+
+## Phases
+
+**Phase Numbering:**
+- Integer phases (1, 2, 3): Planned milestone work
+- Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
+
+Decimal phases appear between their surrounding integers in numeric order.
+
+- [ ] **Phase 1: Foundation** - Project scaffolding, tech stack, database schema, auth, and CI/CD pipeline
+- [ ] **Phase 2: Core Wine Entry** - Users can add, view, and manage wines in their inventory
+- [ ] **Phase 3: Tasting Notes** - Users can add and edit free-text tasting notes on any wine
+- [ ] **Phase 4: Lifecycle Tracking** - Users can mark wines as consumed and manage status transitions
+
+## Phase Details
+
+### Phase 1: Foundation
+**Goal**: A runnable, deployable full-stack skeleton exists — auth works, database is migrated, CI/CD pipeline is live
+**Depends on**: Nothing (first phase)
+**Requirements**: *(no v1 user requirements — this phase unblocks all others)*
+**Success Criteria** (what must be TRUE):
+  1. Developer can run the full stack locally with a single command (Docker Compose + npm scripts)
+  2. PostgreSQL schema is migrated with all v1 tables: `users`, `wines`, `sessions`
+  3. A user can register and log in with email/password; JWT access and refresh tokens are issued
+  4. GitHub Actions CI pipeline runs lint, tests, and build on every push to main
+  5. API and SPA deploy automatically to Render/Neon on merge to main
+**Plans**: TBD
+
+Plans:
+- [ ] 01-01: Monorepo scaffold, tooling, and CI/CD pipeline
+- [ ] 01-02: Database schema, migrations, and auth API
+- [ ] 01-03: React SPA shell, routing, and login/auth flow
+
+### Phase 2: Core Wine Entry
+**Goal**: Users can add wines to their inventory and know exactly what they have at any time
+**Depends on**: Phase 1
+**Requirements**: WINE-01, WINE-02
+**Success Criteria** (what must be TRUE):
+  1. User can add a wine with only a name (quick-add) and it appears in their inventory immediately
+  2. User can add a wine with full details (producer, vintage, varietal, region, bottle count) and all fields are saved correctly
+  3. User can view their full wine inventory as a browsable, sortable list showing key at-a-glance fields
+  4. User can open a wine detail page and see all stored information for that wine
+  5. User can edit any field on an existing wine record and see the change reflected instantly
+**Plans**: TBD
+
+Plans:
+- [ ] 02-01: Wine CRUD API (POST, GET, PATCH, DELETE /wines)
+- [ ] 02-02: Inventory list view and wine detail page (frontend)
+- [ ] 02-03: Add/edit wine forms and bottle count controls (frontend)
+
+### Phase 3: Tasting Notes
+**Goal**: Users can capture and update their personal impressions of any wine in their inventory
+**Depends on**: Phase 2
+**Requirements**: NOTE-01, NOTE-02
+**Success Criteria** (what must be TRUE):
+  1. User can add a free-text tasting note to any wine from the detail page
+  2. User can edit an existing tasting note and the updated text is saved
+  3. Tasting notes are displayed on the wine detail page alongside all other wine information
+  4. User can clear a tasting note (set to empty) if desired
+**Plans**: TBD
+
+Plans:
+- [ ] 03-01: Tasting notes API (PATCH /wines/:id with tasting_notes field) and frontend editor
+
+### Phase 4: Lifecycle Tracking
+**Goal**: Users can mark wines as consumed and keep their active inventory accurate
+**Depends on**: Phase 2
+**Requirements**: LIFE-01
+**Success Criteria** (what must be TRUE):
+  1. User can mark any active wine as consumed from the list view or detail page
+  2. Consumed wines disappear from the default active inventory list
+  3. Consumed wines remain accessible via a history view or status filter
+  4. User can revert a consumed wine back to active if marked in error
+**Plans**: TBD
+
+Plans:
+- [ ] 04-01: Wine status API (PATCH /wines/:id/status) and consumed/history UI
+
+## Progress
+
+**Execution Order:**
+Phases execute in numeric order: 1 → 2 → 3 → 4
+
+| Phase | Plans Complete | Status | Completed |
+|-------|----------------|--------|-----------|
+| 1. Foundation | 0/3 | Not started | - |
+| 2. Core Wine Entry | 0/3 | Not started | - |
+| 3. Tasting Notes | 0/1 | Not started | - |
+| 4. Lifecycle Tracking | 0/1 | Not started | - |
