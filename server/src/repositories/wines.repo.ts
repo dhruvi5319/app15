@@ -98,6 +98,20 @@ export const winesRepo = {
     };
   },
 
+  async updateStatus(
+    id: string,
+    userId: string,
+    status: import('../types/wine.types').WineStatus,
+    statusChangedAt: Date | null
+  ): Promise<Wine | undefined> {
+    const [wine] = await db<Wine>('wines')
+      .where({ id, user_id: userId })
+      .whereNull('deleted_at')
+      .update({ status, status_changed_at: statusChangedAt, date_updated: new Date() })
+      .returning('*');
+    return wine;
+  },
+
   // Expose LIST_COLUMNS for use in search service
   listColumns: LIST_COLUMNS,
 };

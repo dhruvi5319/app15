@@ -60,6 +60,10 @@ const bottleCountSchema = z.object({
   action: z.enum(['increment', 'decrement']),
 });
 
+const statusUpdateSchema = z.object({
+  status: z.enum(['active', 'consumed', 'removed']),
+});
+
 // GET /api/v1/wines — paginated list with search/filter/sort
 winesRouter.get('/', winesController.list);
 
@@ -77,3 +81,6 @@ winesRouter.delete('/:wine_id', winesController.delete);
 
 // PATCH /api/v1/wines/:wine_id/bottle-count — increment or decrement
 winesRouter.patch('/:wine_id/bottle-count', validate(bottleCountSchema), winesController.updateBottleCount);
+
+// PATCH /api/v1/wines/:wine_id/status — update status with transition validation
+winesRouter.patch('/:wine_id/status', validate(statusUpdateSchema), winesController.updateStatus);

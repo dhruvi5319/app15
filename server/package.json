@@ -7,7 +7,7 @@
     "start": "node dist/server.js",
     "lint": "eslint src --ext .ts",
     "type-check": "tsc --noEmit",
-    "test": "jest --passWithNoTests",
+    "test": "jest --passWithNoTests --forceExit",
     "migrate": "node -r ts-node/register ../node_modules/.bin/knex migrate:latest --knexfile knexfile.ts",
     "migrate:rollback": "node -r ts-node/register ../node_modules/.bin/knex migrate:rollback --knexfile knexfile.ts"
   },
@@ -25,8 +25,7 @@
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",
-    "testMatch": ["**/tests/**/*.test.ts"],
-    "maxWorkers": 1
+    "testMatch": ["**/tests/**/*.test.ts"]
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

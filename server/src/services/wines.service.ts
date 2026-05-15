@@ -7,6 +7,7 @@ import type {
   CreateWineInput,
   UpdateWineInput,
   BottleCountResult,
+  WineStatus,
 } from '../types/wine.types';
 
 function makeError(
@@ -140,5 +141,37 @@ export const winesService = {
     const result = await winesRepo.updateBottleCount(id, userId, action);
     if (!result) throw makeError('Wine not found', 404, 'NOT_FOUND');
     return result;
+  },
+
+  async updateStatus(
+    id: string,
+    userId: string,
+    newStatus: WineStatus
+  ): Promise<Wine> {
+    const wine = await winesService.getById(id, userId); // throws 403/404 if needed
+
+    if (wine.status === newStatus) {
+      throw makeError(`Wine is already ${newStatus}`, 422, 'INVALID_TRANSITION');
+    }
+
+    const ALLOWED_TRANSITIONS: Record<WineStatus, WineStatus[]> = {
+      active: ['consumed', 'removed'],
+      consumed: ['active'],
+      removed: ['active'],
+    };
+
+    if (!ALLOWED_TRANSITIONS[wine.status].includes(newStatus)) {
+      throw makeError(
+        `Cannot transition from ${wine.status} to ${newStatus}`,
+        422,
+        'INVALID_TRANSITION'
+      );
+    }
+
+    // status_changed_at: set to now() when transitioning TO consumed/removed, null when reverting to active
+    const statusChangedAt = newStatus === 'active' ? null : new Date();
+    const updated = await winesRepo.updateStatus(id, userId, newStatus, statusChangedAt);
+    if (!updated) throw makeError('Wine not found', 404, 'NOT_FOUND');
+    return updated;
   },
 };
