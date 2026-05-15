@@ -8,8 +8,8 @@
     "lint": "eslint src --ext .ts",
     "type-check": "tsc --noEmit",
     "test": "jest --passWithNoTests",
-    "migrate": "knex migrate:latest",
-    "migrate:rollback": "knex migrate:rollback"
+    "migrate": "node -r ts-node/register ../node_modules/.bin/knex migrate:latest --knexfile knexfile.ts",
+    "migrate:rollback": "node -r ts-node/register ../node_modules/.bin/knex migrate:rollback --knexfile knexfile.ts"
   },
   "dependencies": {
     "express": "^4.18.2",
