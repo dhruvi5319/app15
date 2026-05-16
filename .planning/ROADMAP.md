@@ -58,7 +58,7 @@ Plans:
 - [x] 02-03-PLAN.md — Add/edit wine forms (WineForm, BottleCountControl with optimistic UI, AddWinePage, EditWinePage)
 
 ### Phase 3: Tasting Notes
-**Status**: executing
+**Status**: awaiting verify
 **Goal**: Users can capture and update their personal impressions of any wine in their inventory
 **Depends on**: Phase 2
 **Requirements**: NOTE-01, NOTE-02
