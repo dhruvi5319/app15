@@ -3,7 +3,7 @@ import { useWine } from '../hooks/useWine';
 import { useUpdateWine } from '../hooks/useUpdateWine';
 import { BottleCountControl } from '../components/BottleCountControl';
 import { WineForm } from '../components/WineForm';
-import type { CreateWineInput, UpdateWineInput } from '../types/wine.types';
+import type { UpdateWineInput, CreateWineInput } from '../types/wine.types';
 
 export function EditWinePage() {
   const { id } = useParams<{ id: string }>();

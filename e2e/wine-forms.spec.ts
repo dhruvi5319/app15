@@ -113,6 +113,6 @@ test.describe('Edit Wine Form', () => {
     await page.getByRole('button', { name: /cancel/i }).click();
     await page.waitForURL(/\/wines\/[0-9a-f-]+$/);
     // Should be on detail page (not edit page)
-    expect(page.url()).not.toMatch(/\/edit$/);
+    await expect(page.url()).not.toMatch(/\/edit$/);
   });
 });

@@ -16,7 +16,6 @@ describe('Wines API', () => {
   let token: string;
   let userId: string;
   let otherToken: string;
-  let otherUserId: string;
 
   beforeAll(async () => {
     const user = await createTestUser('a');
@@ -24,14 +23,11 @@ describe('Wines API', () => {
     userId = user.userId;
     const other = await createTestUser('b');
     otherToken = other.token;
-    otherUserId = other.userId;
   });
 
   afterAll(async () => {
     await db('wines').where('user_id', userId).delete();
-    await db('wines').where('user_id', otherUserId).delete();
     await db('users').where('id', userId).delete();
-    await db('users').where('id', otherUserId).delete();
     await db.destroy();
   });
 
@@ -226,13 +222,12 @@ describe('Wines API', () => {
     });
 
     it('cannot change status via PATCH', async () => {
-      // status field is not in updateWineSchema — Zod strips unknown fields
-      // With an empty payload (after stripping status), returns 422
+      // status field should be stripped by Zod (not in updateWineSchema) — returns 422 or ignores
       const res = await request
         .patch(`/api/v1/wines/${wineId}`)
         .set('Authorization', `Bearer ${token}`)
         .send({ status: 'consumed' });
-      // Either 422 (empty body after strip) or 200 (with status unchanged)
+      // Either 422 (Zod strips unknown fields and rejects empty body) or 200 but status unchanged
       if (res.status === 200) {
         expect(res.body.status).toBe('active');
       } else {
@@ -350,136 +345,6 @@ describe('Wines API', () => {
         .set('Authorization', `Bearer ${token}`)
         .send({ action: 'multiply' });
       expect(res.status).toBe(422);
-    });
-  });
-
-  describe('Tasting notes', () => {
-    let wineId: string;
-
-    beforeAll(async () => {
-      const res = await request
-        .post('/api/v1/wines')
-        .set('Authorization', `Bearer ${token}`)
-        .send({ name: 'Tasting Note Target' });
-      wineId = res.body.id;
-    });
-
-    it('PATCH /wines/:id with tasting_notes saves and returns the note', async () => {
-      const res = await request
-        .patch(`/api/v1/wines/${wineId}`)
-        .set('Authorization', `Bearer ${token}`)
-        .send({ tasting_notes: 'Rich and complex with dark fruit notes' });
-      expect(res.status).toBe(200);
-      expect(res.body.tasting_notes).toBe('Rich and complex with dark fruit notes');
-    });
-
-    it('PATCH /wines/:id with tasting_notes="" clears notes (returns null)', async () => {
-      const res = await request
-        .patch(`/api/v1/wines/${wineId}`)
-        .set('Authorization', `Bearer ${token}`)
-        .send({ tasting_notes: '' });
-      expect(res.status).toBe(200);
-      expect(res.body.tasting_notes).toBeNull();
-    });
-  });
-
-  describe('PATCH /api/v1/wines/:wine_id/status', () => {
-    let wineId: string;
-
-    beforeAll(async () => {
-      const res = await request
-        .post('/api/v1/wines')
-        .set('Authorization', `Bearer ${token}`)
-        .send({ name: 'Status Transition Test Wine' });
-      wineId = res.body.id;
-    });
-
-    it('transitions active → consumed: returns 200 with updated status and status_changed_at', async () => {
-      const res = await request
-        .patch(`/api/v1/wines/${wineId}/status`)
-        .set('Authorization', `Bearer ${token}`)
-        .send({ status: 'consumed' });
-      expect(res.status).toBe(200);
-      expect(res.body.status).toBe('consumed');
-      expect(res.body.status_changed_at).not.toBeNull();
-    });
-
-    it('transitions consumed → active (revert): returns 200 with null status_changed_at', async () => {
-      const res = await request
-        .patch(`/api/v1/wines/${wineId}/status`)
-        .set('Authorization', `Bearer ${token}`)
-        .send({ status: 'active' });
-      expect(res.status).toBe(200);
-      expect(res.body.status).toBe('active');
-      expect(res.body.status_changed_at).toBeNull();
-    });
-
-    it('transitions active → removed: returns 200 with updated status', async () => {
-      const res = await request
-        .patch(`/api/v1/wines/${wineId}/status`)
-        .set('Authorization', `Bearer ${token}`)
-        .send({ status: 'removed' });
-      expect(res.status).toBe(200);
-      expect(res.body.status).toBe('removed');
-      expect(res.body.status_changed_at).not.toBeNull();
-    });
-
-    it('transitions removed → active (revert): returns 200', async () => {
-      const res = await request
-        .patch(`/api/v1/wines/${wineId}/status`)
-        .set('Authorization', `Bearer ${token}`)
-        .send({ status: 'active' });
-      expect(res.status).toBe(200);
-      expect(res.body.status).toBe('active');
-    });
-
-    it('same → same transition returns 422 INVALID_TRANSITION', async () => {
-      // wine is now active
-      const res = await request
-        .patch(`/api/v1/wines/${wineId}/status`)
-        .set('Authorization', `Bearer ${token}`)
-        .send({ status: 'active' });
-      expect(res.status).toBe(422);
-      expect(res.body.error.code).toBe('INVALID_TRANSITION');
-    });
-
-    it('consumed → removed returns 422 INVALID_TRANSITION', async () => {
-      // First set to consumed
-      await request
-        .patch(`/api/v1/wines/${wineId}/status`)
-        .set('Authorization', `Bearer ${token}`)
-        .send({ status: 'consumed' });
-
-      const res = await request
-        .patch(`/api/v1/wines/${wineId}/status`)
-        .set('Authorization', `Bearer ${token}`)
-        .send({ status: 'removed' });
-      expect(res.status).toBe(422);
-      expect(res.body.error.code).toBe('INVALID_TRANSITION');
-    });
-
-    it('returns 422 VALIDATION_ERROR for invalid status value', async () => {
-      const res = await request
-        .patch(`/api/v1/wines/${wineId}/status`)
-        .set('Authorization', `Bearer ${token}`)
-        .send({ status: 'drinking' });
-      expect(res.status).toBe(422);
-    });
-
-    it('returns 403 when updating another user wine status', async () => {
-      const res = await request
-        .patch(`/api/v1/wines/${wineId}/status`)
-        .set('Authorization', `Bearer ${otherToken}`)
-        .send({ status: 'consumed' });
-      expect(res.status).toBe(403);
-      expect(res.body.error.code).toBe('FORBIDDEN');
-    });
-
-    it('returns 401 without token', async () => {
-      const res = await request
-        .patch(`/api/v1/wines/${wineId}/status`)
-        .send({ status: 'consumed' });
-      expect(res.status).toBe(401);
     });
   });
 });

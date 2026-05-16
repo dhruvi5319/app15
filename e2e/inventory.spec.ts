@@ -34,7 +34,8 @@ test.describe('Inventory List Page', () => {
     await expect(page.getByRole('button', { name: /date added/i })).toBeVisible();
   });
 
-  test('shows empty state or wine list (no crash)', async ({ page }) => {
+  test('shows empty state when no wines', async ({ page }) => {
+    // Note: this test is meaningful for a fresh user; if test user has wines it won't show EmptyState
     // Either EmptyState or a list of wines should render — page should not crash
     const hasWines = await page.locator('a[href^="/wines/"]').count() > 0;
     if (!hasWines) {

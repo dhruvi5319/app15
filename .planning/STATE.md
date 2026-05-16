@@ -3,14 +3,14 @@ pivota_spec_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 04-01-PLAN.md
-last_updated: "2026-05-15T22:00:00.000Z"
-last_activity: 2026-05-15 — Completed Phase 4 (PATCH /status endpoint, StatusTransitionButtons, HistoryPage, 46/46 tests pass) — v1.0 COMPLETE
+stopped_at: Completed 02-core-wine-entry-03-PLAN.md
+last_updated: "2026-05-15T19:57:20.367Z"
+last_activity: 2026-05-15 — Completed 02-03 Add/edit forms + BottleCountControl (8 files)
 progress:
   total_phases: 4
-  completed_phases: 4
-  total_plans: 8
-  completed_plans: 8
+  completed_phases: 2
+  total_plans: 6
+  completed_plans: 6
   percent: 100
 ---
 
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-05-15)
 
 ## Current Position
 
-Phase: 4 of 4 (Lifecycle Tracking) — COMPLETE
-Plan: 1 of 1 in current phase
-Status: ALL PHASES COMPLETE — v1.0 milestone delivered
-Last activity: 2026-05-15 — Completed 04-01-PLAN.md (PATCH /status, StatusTransitionButtons, HistoryPage, 46/46 tests)
+Phase: 2 of 4 (Core Wine Entry) — COMPLETE
+Plan: 3 of 3 in current phase (all plans complete)
+Status: Phase 2 complete — all 3 plans done; ready for Phase 3 (Status Lifecycle)
+Last activity: 2026-05-15 — Completed 02-03 Add/edit forms + BottleCountControl (8 files)
 
-Progress: [████████████████████] 100% (v1.0 COMPLETE — all 4 phases delivered)
+Progress: [██████████] 100% (Phase 1 complete, Phase 2 complete — 6/6 plans done)
 
 ## Performance Metrics
 
@@ -45,16 +45,12 @@ Progress: [████████████████████] 100% (v
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-foundation | 3/3 | 14min | ~5min |
-| 02-core-wine-entry | 3/3 | ~24min | ~8min |
-| 03-tasting-notes | 1/1 | ~8min | ~8min |
-| 04-lifecycle-tracking | 1/1 | ~10min | ~10min |
-
-**Total:** 8 plans, ~56min, v1.0 COMPLETE
+| 02-core-wine-entry | 3/3 | 7min | ~2.3min |
 
 **Recent Trend:**
 
-- Last 5 plans: 02-03 (8min), 03-01 (8min), 04-01 (10min)
-- Trend: stable
+- Last 5 plans: 01-02 (4min), 01-03 (4min), 02-01 (3min), 02-02 (2min), 02-03 (2min)
+- Trend: ↓ Stable at 2-3min per plan
 
 *Updated after each plan completion*
 
@@ -63,11 +59,9 @@ Progress: [████████████████████] 100% (v
 | Phase 01 P01 | 6min | 2 tasks | 21 files |
 | Phase 01 P02 | 4min | 2 tasks | 19 files |
 | Phase 01-foundation P03 | 4min | 2 tasks | 20 files |
-| Phase 02 P01 | 8min | 3 tasks | 10 files |
-| Phase 02 P02 | 8min | 2 tasks | 12 files |
-| Phase 02 P03 | 8min | 2 tasks | 8 files |
-| Phase 03 P01 | 8min | 2 tasks | 5 files |
-| Phase 04 P01 | 10min | 2 tasks | 14 files |
+| Phase 02-core-wine-entry P01 | 3min | 3 tasks | 9 files |
+| Phase 02-core-wine-entry P02 | 2min | 2 tasks | 12 files |
+| Phase 02-core-wine-entry P03 | 2min | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -90,6 +84,12 @@ Recent decisions affecting current work:
 - [Phase 02]: BottleCountControl uses optimistic UI — updates local count immediately, reverts on error
 - [Phase 02]: WineForm is shared between AddWinePage and EditWinePage; initialValues optional (absent = empty form, present = pre-populated edit)
 - [Phase 02]: Frontend uses inline styles (no Tailwind); Phase 1 did not configure Tailwind, adding a new dependency avoided for Phase 2
+- [Phase 02-core-wine-entry]: searchService separated from winesService to isolate complex query-building from business rules
+- [Phase 02-core-wine-entry]: status field protected from PATCH via Zod schema omission: unknown fields stripped → empty body → 422
+- [Phase 02-core-wine-entry]: useWines queryKey includes full params object (['wines', params]) for per-query cache keying — separate cache entries per sort/filter/page combination
+- [Phase 02-core-wine-entry]: useWine accepts string | undefined (not string) — matches useParams return type, avoids non-null assertions in pages
+- [Phase 02-core-wine-entry]: WineForm.onSubmit accepts union type (CreateWineInput | UpdateWineInput) — pages cast internally to avoid TypeScript contravariance errors
+- [Phase 02-core-wine-entry]: BottleCountControl reads currentCount from parent prop (not internal state) — React Query cache updates cause parent re-render with new count
 
 ### Pending Todos
 
@@ -101,6 +101,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-05-15T22:00:00.000Z
-Stopped at: Completed 04-01-PLAN.md — v1.0 COMPLETE
+Last session: 2026-05-15T19:57:20.365Z
+Stopped at: Completed 02-core-wine-entry-03-PLAN.md
 Resume file: None

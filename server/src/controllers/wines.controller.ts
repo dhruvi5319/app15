@@ -105,18 +105,4 @@ export const winesController = {
       next(err);
     }
   },
-
-  async updateStatus(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-      if (!requireUuid(req.params.wine_id, res)) return;
-      const wine = await winesService.updateStatus(
-        req.params.wine_id,
-        req.user!.id,
-        req.body.status
-      );
-      res.json(wine);
-    } catch (err) {
-      next(err);
-    }
-  },
 };

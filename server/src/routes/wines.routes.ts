@@ -54,14 +54,13 @@ const updateWineSchema = z.object({
   bottle_count: z.number().int().min(0).max(9999).optional(),
   tasting_notes: z.string().nullish().optional(),
   rating: z.number().int().min(1).max(5).nullish().optional(),
-});
+}).refine(
+  (data) => Object.keys(data).length > 0,
+  'At least one field must be provided for update'
+);
 
 const bottleCountSchema = z.object({
   action: z.enum(['increment', 'decrement']),
-});
-
-const statusUpdateSchema = z.object({
-  status: z.enum(['active', 'consumed', 'removed']),
 });
 
 // GET /api/v1/wines — paginated list with search/filter/sort
@@ -81,6 +80,3 @@ winesRouter.delete('/:wine_id', winesController.delete);
 
 // PATCH /api/v1/wines/:wine_id/bottle-count — increment or decrement
 winesRouter.patch('/:wine_id/bottle-count', validate(bottleCountSchema), winesController.updateBottleCount);
-
-// PATCH /api/v1/wines/:wine_id/status — update status with transition validation
-winesRouter.patch('/:wine_id/status', validate(statusUpdateSchema), winesController.updateStatus);

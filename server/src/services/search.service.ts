@@ -44,7 +44,7 @@ export const searchService = {
       );
     }
 
-    // Partial match filters
+    // Exact match filters
     if (varietal) query = query.where('varietal', 'ilike', `%${varietal}%`);
     if (region) query = query.where('region', 'ilike', `%${region}%`);
     if (producer) query = query.where('producer', 'ilike', `%${producer}%`);
@@ -58,7 +58,8 @@ export const searchService = {
     }
 
     // Count total matching rows (clone before pagination)
-    const countResult = await query.clone().count<{ count: string }>('* as count').first();
+    const countQuery = query.clone().count<{ count: string }>('* as count').first();
+    const countResult = await countQuery;
     const total = parseInt(countResult?.count ?? '0', 10);
 
     // Sort and paginate

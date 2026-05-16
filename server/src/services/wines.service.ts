@@ -7,7 +7,6 @@ import type {
   CreateWineInput,
   UpdateWineInput,
   BottleCountResult,
-  WineStatus,
 } from '../types/wine.types';
 
 function makeError(
@@ -90,29 +89,28 @@ export const winesService = {
     await winesService.getById(id, userId);
 
     // Validate fields if provided
-    let sanitizedData = { ...data };
-    if (sanitizedData.name !== undefined) {
-      const name = sanitizedData.name.trim();
+    if (data.name !== undefined) {
+      const name = data.name.trim();
       if (!name) throw makeError('name cannot be empty', 422, 'VALIDATION_ERROR');
-      sanitizedData = { ...sanitizedData, name };
+      data = { ...data, name };
     }
-    if (sanitizedData.vintage !== undefined) validateVintage(sanitizedData.vintage);
-    if (sanitizedData.rating !== undefined) validateRating(sanitizedData.rating);
+    if (data.vintage !== undefined) validateVintage(data.vintage);
+    if (data.rating !== undefined) validateRating(data.rating);
 
-    if (sanitizedData.bottle_count !== undefined) {
-      if (!Number.isInteger(sanitizedData.bottle_count) || sanitizedData.bottle_count < 0 || sanitizedData.bottle_count > 9999) {
+    if (data.bottle_count !== undefined) {
+      if (!Number.isInteger(data.bottle_count) || data.bottle_count < 0 || data.bottle_count > 9999) {
         throw makeError('bottle_count must be between 0 and 9999', 422, 'VALIDATION_ERROR');
       }
     }
 
-    const finalData: UpdateWineInput = {
-      ...sanitizedData,
-      tasting_notes: sanitizedData.tasting_notes !== undefined
-        ? sanitizeTastingNotes(sanitizedData.tasting_notes)
+    const sanitized: UpdateWineInput = {
+      ...data,
+      tasting_notes: data.tasting_notes !== undefined
+        ? sanitizeTastingNotes(data.tasting_notes)
         : undefined,
     };
 
-    const updated = await winesRepo.update(id, userId, finalData);
+    const updated = await winesRepo.update(id, userId, sanitized);
     if (!updated) throw makeError('Wine not found', 404, 'NOT_FOUND');
     return updated;
   },
@@ -141,37 +139,5 @@ export const winesService = {
     const result = await winesRepo.updateBottleCount(id, userId, action);
     if (!result) throw makeError('Wine not found', 404, 'NOT_FOUND');
     return result;
-  },
-
-  async updateStatus(
-    id: string,
-    userId: string,
-    newStatus: WineStatus
-  ): Promise<Wine> {
-    const wine = await winesService.getById(id, userId); // throws 403/404 if needed
-
-    if (wine.status === newStatus) {
-      throw makeError(`Wine is already ${newStatus}`, 422, 'INVALID_TRANSITION');
-    }
-
-    const ALLOWED_TRANSITIONS: Record<WineStatus, WineStatus[]> = {
-      active: ['consumed', 'removed'],
-      consumed: ['active'],
-      removed: ['active'],
-    };
-
-    if (!ALLOWED_TRANSITIONS[wine.status].includes(newStatus)) {
-      throw makeError(
-        `Cannot transition from ${wine.status} to ${newStatus}`,
-        422,
-        'INVALID_TRANSITION'
-      );
-    }
-
-    // status_changed_at: set to now() when transitioning TO consumed/removed, null when reverting to active
-    const statusChangedAt = newStatus === 'active' ? null : new Date();
-    const updated = await winesRepo.updateStatus(id, userId, newStatus, statusChangedAt);
-    if (!updated) throw makeError('Wine not found', 404, 'NOT_FOUND');
-    return updated;
   },
 };

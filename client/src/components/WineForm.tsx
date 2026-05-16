@@ -5,12 +5,12 @@ import type { CreateWineInput, UpdateWineInput, Wine } from '../types/wine.types
 type WineFormValues = {
   name: string;
   producer: string;
-  vintage: string;      // string in form, converted to number | null on submit
+  vintage: string;     // string in form, converted to number | null on submit
   varietal: string;
   region: string;
   bottle_count: string; // string in form, converted to number on submit
   tasting_notes: string;
-  rating: string;       // string in form, converted to number | null on submit
+  rating: string;      // string in form, converted to number | null on submit
 };
 
 interface WineFormProps {
@@ -236,7 +236,7 @@ export function WineForm({
         />
       </div>
 
-      {/* Rating (1-5 stars) */}
+      {/* Rating (1-5) */}
       <div style={fieldStyle}>
         <label style={labelStyle}>Rating (1–5 stars)</label>
         <div style={{ display: 'flex', gap: 6 }}>

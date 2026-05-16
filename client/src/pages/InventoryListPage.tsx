@@ -135,7 +135,7 @@ export function InventoryListPage() {
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                style={{ padding: '6px 12px', borderRadius: 4, border: '1px solid #d1d5db', cursor: page === 1 ? 'default' : 'pointer' }}
+                style={{ padding: '6px 12px', borderRadius: 4, border: '1px solid #d1d5db', cursor: 'pointer' }}
               >
                 ← Prev
               </button>
@@ -145,7 +145,7 @@ export function InventoryListPage() {
               <button
                 onClick={() => setPage((p) => Math.min(data.pagination.total_pages, p + 1))}
                 disabled={page === data.pagination.total_pages}
-                style={{ padding: '6px 12px', borderRadius: 4, border: '1px solid #d1d5db', cursor: page === data.pagination.total_pages ? 'default' : 'pointer' }}
+                style={{ padding: '6px 12px', borderRadius: 4, border: '1px solid #d1d5db', cursor: 'pointer' }}
               >
                 Next →
               </button>

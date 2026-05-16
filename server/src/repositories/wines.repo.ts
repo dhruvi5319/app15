@@ -46,16 +46,12 @@ export const winesRepo = {
   },
 
   async update(id: string, userId: string, data: UpdateWineInput): Promise<Wine | undefined> {
-    const updatePayload: Record<string, unknown> = {
+    const updatePayload: Partial<Wine> & { date_updated: Date } = {
       date_updated: new Date(),
+      ...Object.fromEntries(
+        Object.entries(data).filter(([, v]) => v !== undefined)
+      ) as Partial<Wine>,
     };
-
-    // Only include fields that are explicitly provided (not undefined)
-    for (const [k, v] of Object.entries(data)) {
-      if (v !== undefined) {
-        updatePayload[k] = v;
-      }
-    }
 
     const [wine] = await db<Wine>('wines')
       .where({ id, user_id: userId })
@@ -78,6 +74,8 @@ export const winesRepo = {
     userId: string,
     action: 'increment' | 'decrement'
   ): Promise<BottleCountResult | null> {
+    // Use raw SQL with CASE to handle atomic increment/decrement
+    // decrement is guarded: if current is 0 it won't go below 0 (service layer throws before this)
     const delta = action === 'increment' ? 1 : -1;
     const [result] = await db<Wine>('wines')
       .where({ id, user_id: userId })
@@ -97,21 +95,4 @@ export const winesRepo = {
       date_updated: result.date_updated,
     };
   },
-
-  async updateStatus(
-    id: string,
-    userId: string,
-    status: import('../types/wine.types').WineStatus,
-    statusChangedAt: Date | null
-  ): Promise<Wine | undefined> {
-    const [wine] = await db<Wine>('wines')
-      .where({ id, user_id: userId })
-      .whereNull('deleted_at')
-      .update({ status, status_changed_at: statusChangedAt, date_updated: new Date() })
-      .returning('*');
-    return wine;
-  },
-
-  // Expose LIST_COLUMNS for use in search service
-  listColumns: LIST_COLUMNS,
 };
